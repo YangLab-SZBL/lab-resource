@@ -1,9 +1,15 @@
 # Lab Resources
 
+<p>
+  <a href="https://yanglab202606.github.io/lab-resource/"><img alt="Open website" src="https://img.shields.io/badge/%F0%9F%93%96%20Open%20Website-yanglab202606.github.io%2Flab--resource-A8BDA8?style=for-the-badge&labelColor=5F7A62"></a>
+</p>
+
+**👉 网站入口 / Website: <https://yanglab202606.github.io/lab-resource/>**
+
+<img src="docs/assets/site-qr.png" alt="QR code for the website" width="140">
+
 A collection of useful resources for our lab — HPC guides, software tutorials, workflows, and scripts —
 published as a documentation website with [MkDocs Material](https://squidfunk.github.io/mkdocs-material/).
-
-Website: <https://yanglab202606.github.io/lab-resource/>
 
 ## Layout
 
