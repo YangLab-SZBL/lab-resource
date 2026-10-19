@@ -1,0 +1,169 @@
+/* Lab Resource — muted Morandi palette.
+   Change colors here; everything else comes from MkDocs Material. */
+
+:root {
+  --lab-sage: #a8bda8;
+  --lab-sage-dark: #5f7a62;   /* readable text/link shade of sage */
+  --lab-blue: #a9c4d2;
+  --lab-blue-dark: #4f7486;
+  --lab-yellow: #e8dfa8;
+  --lab-bg: #fafaf6;
+  --lab-surface: #ffffff;
+  --lab-text: #454d4a;
+  --lab-border: #e5e8e2;
+}
+
+[data-md-color-primary="custom"] {
+  --md-primary-fg-color: var(--lab-sage);
+  --md-primary-fg-color--light: #c3d3c3;
+  --md-primary-fg-color--dark: var(--lab-sage-dark);
+  --md-primary-bg-color: var(--lab-text);
+  --md-primary-bg-color--light: rgba(69, 77, 74, 0.7);
+}
+
+[data-md-color-accent="custom"] {
+  --md-accent-fg-color: var(--lab-blue-dark);
+  --md-accent-fg-color--transparent: rgba(169, 196, 210, 0.15);
+}
+
+[data-md-color-scheme="default"] {
+  --md-default-bg-color: var(--lab-bg);
+  --md-default-fg-color: var(--lab-text);
+  --md-default-fg-color--light: #6b736f;
+  --md-typeset-color: var(--lab-text);
+  --md-typeset-a-color: var(--lab-sage-dark);
+  --md-code-bg-color: #f3f4ef;
+  --md-code-fg-color: #3d4542;
+  --md-typeset-mark-color: rgba(232, 223, 168, 0.6);
+  --md-footer-bg-color: #eef0ea;
+  --md-footer-bg-color--dark: #e5e8e2;
+  --md-footer-fg-color: var(--lab-text);
+  --md-footer-fg-color--light: #6b736f;
+  --md-footer-fg-color--lighter: #8a918d;
+}
+
+/* Header and tabs: flat sage, no shadow */
+.md-header,
+.md-tabs {
+  background-color: var(--lab-sage);
+  box-shadow: none;
+}
+.md-header--shadow {
+  box-shadow: 0 1px 0 var(--lab-border);
+}
+
+/* Search box: light, quiet field on the sage header */
+@media screen and (min-width: 60em) {
+  .md-search__form {
+    background-color: rgba(255, 255, 255, 0.45);
+  }
+  .md-search__form:hover {
+    background-color: rgba(255, 255, 255, 0.65);
+  }
+  .md-search__input::placeholder {
+    color: var(--lab-text);
+  }
+}
+
+/* Main content on a white surface */
+.md-main {
+  background-color: var(--lab-bg);
+}
+.md-content__inner {
+  background: var(--lab-surface);
+  border: 1px solid var(--lab-border);
+  border-radius: 8px;
+  padding: 1.2rem 1.6rem 1.6rem;
+  margin-top: 1.2rem;
+}
+.md-content__inner::before {
+  display: none;
+}
+
+/* Headings */
+.md-typeset h1 {
+  color: var(--lab-text);
+  font-weight: 600;
+}
+.md-typeset h2 {
+  border-bottom: 1px solid var(--lab-border);
+  padding-bottom: 0.3em;
+}
+
+/* Code blocks: subtle border instead of heavy background */
+.md-typeset pre > code {
+  border: 1px solid var(--lab-border);
+  border-radius: 6px;
+}
+
+/* Tables */
+.md-typeset table:not([class]) {
+  border: 1px solid var(--lab-border);
+  box-shadow: none;
+}
+.md-typeset table:not([class]) th {
+  background-color: #f1f4ef;
+  color: var(--lab-text);
+}
+
+/* Admonitions: soft palette tones */
+.md-typeset .admonition,
+.md-typeset details {
+  border-width: 1px;
+  box-shadow: none;
+}
+.md-typeset .admonition.note,
+.md-typeset details.note {
+  border-color: var(--lab-blue);
+}
+.md-typeset .note > .admonition-title,
+.md-typeset .note > summary {
+  background-color: rgba(169, 196, 210, 0.18);
+}
+.md-typeset .admonition.warning,
+.md-typeset details.warning {
+  border-color: #d9cd85;
+}
+.md-typeset .warning > .admonition-title,
+.md-typeset .warning > summary {
+  background-color: rgba(232, 223, 168, 0.35);
+}
+
+.md-typeset .admonition.example,
+.md-typeset details.example {
+  border-color: var(--lab-sage);
+}
+.md-typeset .example > .admonition-title,
+.md-typeset .example > summary {
+  background-color: rgba(168, 189, 168, 0.15);
+}
+.md-typeset .example > .admonition-title::before,
+.md-typeset .example > summary::before,
+.md-typeset details > summary::after {
+  background-color: var(--lab-sage-dark);
+}
+
+/* Homepage cards */
+.md-typeset .grid.cards > ul > li {
+  border: 1px solid var(--lab-border);
+  border-radius: 8px;
+  background: var(--lab-surface);
+  transition: border-color 0.2s;
+}
+.md-typeset .grid.cards > ul > li:hover {
+  border-color: var(--lab-sage);
+  box-shadow: none;
+}
+.md-typeset .grid.cards .lg {
+  color: var(--lab-sage-dark);
+}
+
+/* Small screens: let content use full width */
+@media screen and (max-width: 44.984375em) {
+  .md-content__inner {
+    border: none;
+    border-radius: 0;
+    margin: 0;
+    padding: 0.8rem 0.8rem 1.2rem;
+  }
+}
