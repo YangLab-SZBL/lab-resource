@@ -41,8 +41,3 @@ Everything can be done on the GitHub website. You don't need to install anything
    ```
 
 **Check the update:** open the **Actions** tab. ✅ green means it worked. ❌ red means something went wrong, but the website keeps its last working version. The usual causes are misaligned spaces in `mkdocs.yml` or a misspelled file name.
-
-**Notes:**
-
-- If you can't edit, ask an admin to add your GitHub account.
-- This website is public. Never upload passwords, tokens, or unpublished data.
