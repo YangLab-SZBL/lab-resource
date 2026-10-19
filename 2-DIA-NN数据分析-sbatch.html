@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DIA-NN 数据分析指南（sbatch 建库/搜库）· SZBL HPC · 分册 2/3</title>
+<style>
+:root{
+  --brand:#1b5e8f; --brand-d:#123c5c; --accent:#e8a33d;
+  --bg:#f5f7fa; --card:#ffffff; --ink:#2b3440; --sub:#5f6b7a;
+  --line:#dde3ea; --code-bg:#0f1c2b; --code-ink:#d7e3f0;
+  --ok:#1d7a4f; --ok-bg:#e8f6ee; --warn:#9a6b00; --warn-bg:#fff6e0;
+  --bad:#a33131; --bad-bg:#fdecec; --info:#255b8a; --info-bg:#e8f1fa;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);
+ font:15px/1.75 "Segoe UI","Microsoft YaHei",system-ui,-apple-system,sans-serif}
+header.hero{background:linear-gradient(135deg,var(--brand-d),var(--brand) 60%,#2d7bb5);
+ color:#fff;padding:34px 24px 28px}
+header.hero .wrap{max-width:1080px;margin:0 auto}
+header.hero h1{margin:0 0 8px;font-size:26px;letter-spacing:.5px}
+header.hero p.meta{margin:4px 0;opacity:.92;font-size:13.5px}
+.badges{margin-top:14px;display:flex;flex-wrap:wrap;gap:8px}
+.badges span{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.35);
+ border-radius:20px;padding:3px 12px;font-size:12.5px}
+nav.toc{position:sticky;top:0;z-index:50;background:#fff;border-bottom:1px solid var(--line);
+ box-shadow:0 2px 6px rgba(20,40,60,.06)}
+nav.toc .wrap{max-width:1080px;margin:0 auto;display:flex;overflow-x:auto;gap:2px;padding:0 8px}
+nav.toc a{white-space:nowrap;padding:11px 13px;font-size:13.5px;color:var(--sub);
+ text-decoration:none;border-bottom:3px solid transparent}
+nav.toc a:hover{color:var(--brand)}
+main{max-width:1080px;margin:0 auto;padding:26px 24px 80px}
+section{margin-top:34px}
+h2{font-size:21px;color:var(--brand-d);border-left:5px solid var(--accent);
+ padding-left:12px;margin:0 0 14px}
+h3{font-size:16.5px;color:var(--brand);margin:26px 0 8px}
+h4{font-size:14.5px;margin:18px 0 6px;color:#3b4a5a}
+p{margin:8px 0}
+a{color:#1660a8}
+a:hover{text-decoration:none}
+code{background:#eef2f6;border:1px solid #e2e8ef;border-radius:4px;padding:1px 6px;
+ font-family:Consolas,"Cascadia Mono",monospace;font-size:.9em;color:#1d4a73}
+pre{background:var(--code-bg);color:var(--code-ink);border-radius:8px;padding:14px 16px;
+ overflow-x:auto;font-size:13px;line-height:1.6;margin:10px 0}
+pre code{background:none;border:none;padding:0;color:inherit;font-size:inherit}
+pre .cm{color:#7f9ab5;font-style:italic}
+pre .k{color:#7fd0ff}
+pre .f{color:#f0b45e}
+pre .s{color:#9ee08a}
+.kbd{border:1px solid #b9c4d0;border-bottom-width:2.5px;border-radius:4px;
+ padding:0 7px;background:#f0f4f8;font-size:12.5px;font-family:Consolas,monospace}
+table{border-collapse:collapse;width:100%;margin:12px 0;background:#fff;
+ font-size:13.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:#eef4f9;color:#274b6b;font-weight:600;white-space:nowrap}
+tr:nth-child(even) td{background:#fafcfe}
+.box{border-radius:8px;padding:12px 16px;margin:12px 0;font-size:14px}
+.box .t{font-weight:700;display:block;margin-bottom:4px}
+.box.info{background:var(--info-bg);border:1px solid #c4d9ec}
+.box.info .t{color:var(--info)}
+.box.tip{background:var(--ok-bg);border:1px solid #bfe0cd}
+.box.tip .t{color:var(--ok)}
+.box.warn{background:var(--warn-bg);border:1px solid #ecd7a3}
+.box.warn .t{color:var(--warn)}
+.box.danger{background:var(--bad-bg);border:1px solid #ecc3c3}
+.box.danger .t{color:var(--bad)}
+.step{display:flex;gap:12px;margin:10px 0;align-items:flex-start}
+.step .n{flex:0 0 26px;height:26px;border-radius:50%;background:var(--brand);
+ color:#fff;display:flex;align-items:center;justify-content:center;
+ font-weight:700;font-size:13.5px;margin-top:2px}
+.step .c{flex:1}
+.chip{display:inline-block;background:#e3edf6;color:#1d5b92;border-radius:4px;
+ padding:0 8px;font-size:12.5px;margin-right:4px;white-space:nowrap}
+.src{font-size:12.5px;color:var(--sub);border-top:1px dashed #c9d3dd;padding-top:6px;margin-top:6px}
+footer{border-top:1px solid var(--line);color:var(--sub);font-size:12.5px;
+ max-width:1080px;margin:30px auto 0;padding:16px 24px 30px}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <h1>DIA-NN 数据分析指南（sbatch 建库 / 搜库）</h1>
+    <p class="meta">适用平台：深圳湾实验室高性能计算（HPC）<b>一号集群</b>（Slurm 调度；DIA-NN 2.6.1 以 Singularity 容器部署）</p>
+    <p class="meta">编制：杨卡课题组内部整理（qoder）　|　系列分册 2/3　|　版本 v1.0　|　日期 2026-09-04</p>
+    <div class="badges">
+      <span>DIA-NN 2.6.1（容器版）</span>
+      <span>官方两阶段工作流：建库 → 搜库定量</span>
+      <span>sbatch 批处理</span>
+      <span>实时看作业 · 结果文件解读</span>
+    </div>
+  </div>
+</header>
+
+<nav class="toc"><div class="wrap">
+  <a href="#s1">4.0 软件形态与路线</a>
+  <a href="#s2">4.1 建库·搜库（sbatch）</a>
+  <a href="#s3">4.2 交互式调试</a>
+  <a href="#s4">4.3 输出文件与进度</a>
+  <a href="#s5">4.4 常见问题</a>
+</div></nav>
+
+<main>
+
+<div class="box warn"><span class="t">使用前必读</span>
+本册由课题组内部基于 DIA-NN 官方文档（2.6 版 README）、平台手册与团队实测整理，用于内部学习交流；命令与参数以 DIA-NN 官方及平台最新发布为准。本册内容自综合版 v1.2 拆出，章节沿用第 4 章编号（4.0–4.4），正文中“4.x”均指本册小节。
+</div>
+<div class="box tip"><span class="t">本册定位与阅读前置（先花 1 分钟确认）</span>
+本册＝系列第 2 册，聚焦 <b>用 sbatch 批处理跑 DIA-NN</b>：两阶段工作流（① 建预测谱库；② 谱库搜库定量）＋实时查看作业＋结果文件解读。阅读前置：
+① 会登录一号集群、会传文件——不会先读《HPC 使用入门》（<a href="1-HPC使用入门.html">第 1 册</a>）第一、二章；
+② 知道 sbatch / squeue / scancel 是什么——不会先读第 1 册第三章；
+③ 对 Linux 完全零基础者，请先完成第 1 册 〇~三 章热身再回来。
+系列导航：<a href="1-HPC使用入门.html">① HPC 使用入门</a> · 本册 · <a href="3-FragPipe数据分析-salloc.html">③ FragPipe 数据分析（salloc）</a></div>
+
+<!-- ===================== 4.0 ===================== -->
+<section id="s1">
+<h2>4.0 软件形态与两条推荐路线</h2>
+<p>平台已在 <b>一号集群</b>部署 DIA-NN 2.6.1 的 Singularity 容器镜像（软件升级由平台负责，无需自行安装）。<b>容器</b>＝把软件连同运行环境整体打包（镜像文件以 .sif 结尾，概念见《HPC 使用入门》0.4），不理解机制也没关系，命令里路径照抄即可。唯一要养成的习惯：<b>每个新开的终端窗口，用 DIA-NN 前先执行一次 <code>module load singularity/ce-3.8.0</code></b>（把容器运行环境“加载”进当前窗口，关掉窗口就失效，下次重开要再执行）：</p>
+<pre><code>/lustre/software/diann/2.6.1/diann261.sif     <span class="cm"># 容器镜像（可直接执行，等价于 singularity run/exec）</span>
+/lustre/software/diann/2.6.1/                   <span class="cm"># 目录</span>
+<span class="cm"># 使用前加载 Singularity 模块（两种路线都需要）</span>
+module load singularity/ce-3.8.0</code></pre>
+<p>两条路线任选：</p>
+<table>
+<tr><th>路线</th><th>适用</th><th>做法</th></tr>
+<tr><td><b>A. sbatch 一键批处理</b>（推荐）</td><td>正式数据分析，样本多、时间长</td><td>写 .sh 提交作业 → tail 看日志 → 结束后拷结果（本册 4.1）</td></tr>
+<tr><td><b>B. 交互式前台调试</b></td><td>验证参数、单/少样本试跑</td><td>salloc 上计算节点 → 前台直接跑（小样本）→ 用完 exit（本册 4.2）</td></tr>
+</table>
+</section>
+
+<!-- ===================== 4.1 ===================== -->
+<section id="s2">
+<h2>4.1 路线 A：sbatch 提交 DIA-NN（正式分析）</h2>
+<div class="box warn"><span class="t">DIA-NN 工作流四铁律（组内实战总结，先读再写脚本）</span>
+<b>① 建库先行，候选集在建库时定格</b>：漏切数、修饰声明、肽段/质荷比窗口都在“FASTA 虚拟酶切”时决定谱库内容；搜库阶段改这些参数<b>不会</b>改变候选集（纯库搜索不再消化 FASTA，见下方说明框①）。建库用哪个 FASTA 直接影响结果：尽量无 decoy、contaminant 与 isoform 按需取舍（见说明框③）。
+<b>② 搜库时谱库与 fasta 必须匹配</b>：<code>--lib</code> 谱库与 <code>--fasta</code> 注释文件应为<b>同一物种、同一来源版本</b>（如均为人类 UniProt UP000005640），否则报告里的蛋白名/基因注释会错乱或缺失。分析时的 fasta 只做注释，<b>不要</b>再加 <code>--fasta-search</code>（那是建库参数）。
+<b>③ 线程：32 核节点可以申请 64 线程</b>：cu-1 为 32 物理核（超线程 64 逻辑核），<code>--ntasks-per-node=64</code> + <code>--threads 64</code> 可正常排队运行（组内实测）；但超线程对 DIA-NN 一般无额外加速，32 与 64 哪个快以实测为准（见 4.4③）。
+<b>④ 重搜前清 .quant；MBR 尽量开启</b>：换库/改参数重新搜库同一批 mzML/raw 前，先 <code>rm -f *.quant</code> 删除旧中间缓存（否则旧搜索的识别结果可能被复用，见 4.3 表中 *.quant 行）；<code>--reanalyse</code>（MBR）在预测谱库定量分析中<b>尽量保持开启</b>（官方推荐，见说明框②）。</div>
+<div class="step"><div class="n">1</div><div class="c"><b>准备数据目录</b>：<code>mkdir ~/diann_test</code>（建议每次分析建独立目录），将 .raw（若用 Bruker 仪器则为整个 .d 文件夹；Linux 容器还支持 .mzML）、<b>已有谱库</b>（如 <code>human.predicted.speclib</code>）上传到<b>同一目录</b>（cd 到该目录再提交作业，避免路径问题）；fasta 建议一并放好，角色是<b>蛋白注释</b>（见下方对照框说明③）。若习惯脚本与数据分目录存放，路径怎么写见下框。</div></div>
+<div class="box info"><span class="t">路径提示：脚本与 raw/fasta 不在同一目录怎么办</span>
+<p><b>先记原则</b>：sbatch 作业的“当前目录”＝你<b>执行 sbatch 时所在的目录</b>（Slurm 环境变量 <code>SLURM_SUBMIT_DIR</code>），与 .sh 脚本放在哪里无关；脚本里的相对路径、<code>%j.out/.err</code> 都从该目录解析。所以最省事的做法是“进数据目录提交，脚本放任何位置”：</p>
+<pre><code>cd /lustre/你的路径/数据目录
+sbatch ~/scripts/diann_job.sh        <span class="cm"># 脚本路径写绝对路径（或相对路径）即可</span></code></pre>
+<p>脚本内仍写相对文件名（<code>--f "xxx.raw"</code>），一行都不用改。其余两种等价写法：</p>
+<p><b>① 全部写绝对路径</b>（数据分散在多个目录时最稳）：每个 <code>--f</code>、<code>--fasta</code>、<code>--lib</code> 各自带全路径；<code>--out "/lustre/…/result/report.parquet"</code> 同时决定结果写到哪（所有派生文件跟随它）；想让 <code>%j.out/.err</code> 也进结果目录，另加 <code>#SBATCH --output=/lustre/…/result/%j.out</code>。</p>
+<p><b>② 在脚本里指定工作目录</b>：头部加 <code>#SBATCH --chdir=/lustre/…/数据目录</code>（作业直接在该目录启动），或在主命令前加一行 <code>cd /lustre/…/数据目录</code>。</p>
+<p>补充：登录后可用 <code>pwd</code> 查看自己账号的完整路径（一般形如 <code>/lustre/账号名/…</code>）；某目录内 raw 很多时，可改用 <code>--dir "/lustre/…/raw目录"</code> 一次处理整个文件夹（<code>--dir-all</code> 则递归子目录），省去一长串 <code>--f</code>；含空格的路径参数务必用引号包住。</p></div>
+<div class="step"><div class="n">2</div><div class="c"><b>编写作业脚本</b>（vim 新建 diann_job.sh；不会 vim 的替代法与保存/退出速记见下方“新手实操”框）。DIA-NN 官方流程分两步：<b>① 从 FASTA 生成预测谱库（一次性）；② 用谱库分析原始数据（每次实验）</b>。已有 <code>human.predicted.speclib</code> 就按下面的“分析模板”写；没有则先按“建库模板”跑一次。分析模板为本组实测可用：</div></div>
+<pre><code><span class="cm">#!/bin/bash</span>
+<span class="cm">#SBATCH --job-name=diann_search</span>
+<span class="cm">#SBATCH --partition=cu-1          # 32核队列；如队列忙可加 cu-short,cu-1 让调度器按序尝试</span>
+<span class="cm">#SBATCH --nodes=1</span>
+<span class="cm">#SBATCH --ntasks-per-node=32      # 与下方 --threads 保持一致（想试 64 线程：两处同改 64，见 4.4③）</span>
+<span class="cm">#SBATCH --time=24:00:00</span>
+<span class="cm">#SBATCH --output=%j.out</span>
+<span class="cm">#SBATCH --error=%j.err</span>
+
+module load singularity/ce-3.8.0
+
+<span class="cm"># 分析模板：镜像文件 + 容器内程序路径 + 参数（写法：镜像 + 容器内 diann-linux + 参数）</span>
+/lustre/software/diann/2.6.1/diann261.sif /diann-2.6.1/diann-linux \
+  --f "20260730_ky_hela_1ug_dia_1.raw" --f "20260730_ky_hela_1ug_dia_2.raw" \
+  --f "20260730_ky_hela_1ug_dia_3.raw" --f "20260730_ky_hela_1ug_dia_4.raw" \
+  --lib "human.predicted.speclib" \
+  --fasta "2026-07-14-decoys-reviewed-contam-UP000005640.fas" \
+  --reanalyse --rt-profiling \
+  --var-mods 3 \
+  --var-mod UniMod:35,15.994915,M --var-mod UniMod:1,42.010565,*n \
+  --out "report.parquet" --matrices --qvalue 0.01 \
+  --threads 32 --verbose 1 --peptidoforms</code></pre>
+<pre><code><span class="cm"># 建库模板（无现成谱库时一次性生成；产物 human.predicted.speclib 供以后所有同物种实验的 --lib 复用）
+# 漏切/修饰/窗口在此定格为谱库候选集；漏切官方推荐 1（某些样本类型 2 有益），改动后需重建库</span>
+/lustre/software/diann/2.6.1/diann261.sif /diann-2.6.1/diann-linux \
+  --fasta "uniprot_human_reviewed.fas" \
+  --fasta-search --predictor --gen-spec-lib --out-lib "human.predicted.speclib" \
+  --var-mods 3 \
+  --var-mod UniMod:35,15.994915,M --var-mod UniMod:1,42.010565,*n \
+  --missed-cleavages 2 --met-excision \
+  --min-pep-len 7 --max-pep-len 30 \
+  --min-pr-mz 300 --max-pr-mz 1800 --min-pr-charge 1 --max-pr-charge 4 \
+  --min-fr-mz 200 --max-fr-mz 1800 --cut K*,R* \
+  --out "build.parquet" --threads 32 --verbose 1</code></pre>
+<div class="box info"><span class="t">模板与官方 README 对照（DIA-NN 2.6）</span>
+<b>① 两阶段与参数分工</b>：官方推荐“建库”与“分析”分开执行——预测谱库生成约每百万前体 2 分钟内完成，同物种实验一直复用。把两段合并成一条命令、同时写 <code>--lib</code> 与 <code>--fasta-search --gen-spec-lib</code> 并非官方用法。<code>--fasta-search --predictor --gen-spec-lib --out-lib</code> 只属于建库；<code>--missed-cleavages --met-excision --min-pep-len --max-pep-len --min/max-pr-mz --min/max-pr-charge --min/max-fr-mz --cut</code> 均只作用于 FASTA 酶切消化，纯库搜索时可省略（写了也会被忽略，不影响结果）。漏切数（<code>--missed-cleavages</code>）同理：官方默认推荐 1（“setting to 1 is optimal in most cases”），对某些样本类型设 2 可能有益，若 PTM 发生在决定酶切特异性的氨基酸上漏切需相应 +1。<b>建库定几漏切，搜库结果里最多就是几</b>——重搜想收紧只能在建库端改参数并重建库。
+<b>② MBR 与 RT profiling</b>：用<b>预测谱库</b>做定量分析时，官方建议<b>始终开启 MBR（<code>--reanalyse</code>）</b>——第一遍先用本次数据生成经验谱库、第二遍用它重搜，识别数与定量完整度更好；<code>--rt-profiling</code> 官方释义为“经验谱库按 IDs、RT 与 IM 轮廓生成”（官方对几乎所有流程的推荐设置），故二者常成对出现，组里实测也一直带着。反过来，若用的是 DIA-NN 自建的经验谱库（RT/IM 已来自实测数据），官方建议关掉 MBR。
+<b>③ fasta 与 decoy 的角色</b>：DIA-NN 的 FDR 对照的是<b>它自己生成的 decoy</b>（官方 README “Scoring”：对目标肽段做残基重排/单残基突变），用户<b>不需要</b>为 FDR 准备含 decoy 的 fasta；官方支持“自带 decoy”的唯一入口是在 .parquet 谱库中用 Flags 列标记（第三方建库软件接口，README “Custom decoys”），README 全文<b>没有</b>在 FASTA 中识别 decoy 条目的机制。加 fasta 的目的是让报告带上蛋白名/基因名并把修饰位点映射到蛋白序列（官方对 GUI “Add FASTA”的说明，纯注释用途）。注意：FragPipe 命名的 decoys-…-contam fasta 只做搜索注释没问题（本组实测通过，decoy 条目无对应肽段命中、不影响结果）；但据上述机制推断（非官方明文），拿它跑 <code>--fasta-search</code> 建库时其中的 decoy 条目会被当作普通蛋白一并消化进目标谱库，稳妥起见建库建议用不含 decoy 的 reviewed fasta。<b>建库 FASTA 选择速查：</b>① decoy——<b>不要混入</b>（DIA-NN 无 FASTA 识别机制，见上）；② contaminant（常见污染蛋白，如 FragPipe 的 contam 列表）——<b>可并入</b>，污染条目会被标注便于排除，对建库无害；③ isoforms——默认用 UniProt reviewed（canonical）即可，<b>含 isoforms 会显著扩大搜索空间</b>（建库/搜索更慢、RAM 更高），仅当需要区分剪接异构体时才加。
+<b>④ 修饰声明</b>：半胱氨酸 Carbamidomethyl（+57.021）是 DIA-NN 内置默认固定修饰，无需显式声明；只需用 <code>--var-mod</code> 声明可变修饰（本模板只声明 M 氧化＋蛋白 N 端乙酰化，官方提示其它修饰按需添加、宁少勿多），<code>--var-mods 3</code> 属官方认可范围（1–3）。素材旧命令中的 <code>--unimod4/--unimod35</code> 未被 2.6 官方命令行参考收录，属遗留写法，已删除。
+<b>⑤ 细节</b>：<code>--cut K*,R*</code> = 胰蛋白酶、不启用脯氨酸规则（K/R 后接 P 仍会切）；要经典胰蛋白酶（含 P 规则）写成 <code>--cut K*,R*,!*P</code>。<code>--min-pr-charge 1</code> 适用于 Orbitrap DIA；Bruker timsTOF（dia-PASEF）数据用预测库搜索时官方要求最小电荷为 2。原始素材命令存在缺“\”续行、<code>-- var-mods</code> 多空格等笔误，本模板已校正；<b>行尾 <code>\</code> 后不要留空格</b>，否则整行会被截断成单条命令。</div>
+<div class="box tip"><span class="t">新手实操：新建 / 编辑 / 保存 / 退出作业脚本（vim 或 heredoc）</span>
+<p><b>vim 三步建脚本</b>：<code>vim diann_job.sh</code> 新建文件（文件名已存在则是打开编辑）→ 按 <span class="kbd">i</span> 进入编辑模式（左下角出现 <code>-- INSERT --</code>），此时才能粘贴/输入内容 → 编辑完按 <span class="kbd">Esc</span> 退出编辑模式 → 输入 <code>:wq</code> 回车，保存并退出（w=写入，q=退出）。</p>
+<p><b>口诀</b>：<span class="kbd">i</span> 进、<span class="kbd">Esc</span> 出、<code>:wq</code> 走。不保存直接强退用 <code>:q!</code>；提示 <code>E37: No write since last change</code> 表示有改动未保存，改用 <code>:wq</code> 或 <code>:q!</code>。</p>
+<p><b>常见卡壳</b>：① 还停留在编辑模式（<code>-- INSERT --</code> 未消失）时输入 <code>:wq</code> 会被当成正文打进去——先按 <span class="kbd">Esc</span> 再输入；② 冒号必须是英文半角 <code>:</code>，中文输入法下的全角 <code>：</code> 无效；③ 终端误按 <span class="kbd">Ctrl+S</span> 会冻结（Xshell/MobaXterm 同样），按 <span class="kbd">Ctrl+Q</span> 恢复。</p>
+<p><b>不想学 vim 的替代</b>：heredoc 一次生成——粘贴完整脚本后另起一行输入 <code>EOF</code> 回车即写盘（<code>'EOF'</code> 加引号可防止变量提前展开）：</p>
+<pre><code>cat &gt; diann_job.sh &lt;&lt;'EOF'
+<span class="cm">#!/bin/bash
+#SBATCH --job-name=…（你的完整脚本粘贴于此）…</span>
+EOF</code></pre>
+<p><b>本机写好再上传</b>（WinSCP/MobaXterm 等）：Windows 文本是 CRLF 换行，直接 sbatch 会让 <code>#SBATCH</code> 行尾带 <code>\r</code> 导致参数解析出错，上传后先执行 <code>sed -i 's/\r$//' diann_job.sh</code> 转成 LF。无论哪种方式，提交前先 <code>bash -n diann_job.sh</code>（无输出即语法正常），再 <code>sbatch diann_job.sh</code>。</p></div>
+<div class="step"><div class="n">3</div><div class="c"><b>提交与监控</b>：<code>sbatch diann_job.sh</code> → <code>squeue -l</code> 确认状态 → <code>tail -f 作业号.out</code> 实时看进度（DIA-NN 会打印每步日志），或 <code>ls -lg</code> 看输出文件是否在增长。</div></div>
+<div class="step"><div class="n">4</div><div class="c"><b>完成与产物</b>：作业显示 COMPLETED 后，在目录中检查输出（见 4.3）；结果即时拷回家目录/本地，勿长期堆放临时目录。sbatch 作业结束即自动停止计费，<b>无需手动杀</b>；若中途想停用 <code>scancel JOBID</code>。</div></div>
+</section>
+
+<!-- ===================== 4.2 ===================== -->
+<section id="s3">
+<h2>4.2 路线 B：交互式调试（推荐先做小规模验证）</h2>
+<pre><code>tmux                                  <span class="cm"># 防断线（可选）</span>
+salloc -p cu-debug -N 1 -n 32          <span class="cm"># 申请 32 核调试节点（cu-debug 时限短、上机快）</span>
+ssh cuXXX                              <span class="cm"># 登录分配到的计算节点</span>
+cd ~/diann_test                        <span class="cm"># 数据目录</span>
+module load singularity/ce-3.8.0
+/lustre/software/diann/2.6.1/diann261.sif /diann-2.6.1/diann-linux --f "1个测试样本.raw" --lib "xxx.speclib" --out "t.parquet" --threads 32 <span class="cm"># 前台观察输出</span>
+<span class="cm"># ……验证 OK 后：正式分析请把命令换成 4.1 的“分析模板”（含 --reanalyse MBR）：</span>
+exit                                  <span class="cm"># ① 退出计算节点</span>
+exit                                  <span class="cm"># ② 退出 salloc 会话（务必两次 exit，否则持续计费！）</span></code></pre>
+</section>
+
+<!-- ===================== 4.3 ===================== -->
+<section id="s4">
+<h2>4.3 输出文件说明与进度查看</h2>
+<table>
+<tr><th>文件</th><th>含义</th></tr>
+<tr><td><code>report.parquet</code></td><td>主结果（谱图/肽段/蛋白定量矩阵），可用 Python 读取或 FragPipe 生态工具查看</td></tr>
+<tr><td><code>report.stats.tsv</code> / <code>report.log.txt</code></td><td>统计与日志：<code>cat report.stats.tsv</code> 查看运行统计（蛋白/肽段数等）</td></tr>
+<tr><td><code>xxx.speclib</code></td><td>（建库流程）生成的谱库，供后续批量定量复用</td></tr>
+<tr><td><code>predicted.*</code>（预测模式）</td><td>预测谱库相关中间产物</td></tr>
+<tr><td><code>*.quant</code>（出现在 mzML 同目录）</td><td>单样本<b>识别＋定量的中间缓存</b>：DIA-NN 先逐个文件独立处理、各自落盘 .quant，全部跑完再汇总做跨样本步骤。<b>换谱库或改参数对同一批数据重新搜库前必须删除</b>（<code>rm -f *.quant</code>），否则旧搜索的识别结果可能被复用；单次完整分析跑完无需理会它</td></tr>
+<tr><td><code>作业号.out / .err</code></td><td>Slurm 标准输出/错误（排查错误优先看 .err）</td></tr>
+<tr><td><code>*.matrix.tsv</code> 系列（开启 <code>--matrices</code> 后）</td><td>按 <code>--out</code> 前缀派生的定量矩阵：<code>report.pg_matrix.tsv</code>（蛋白组）、<code>report.pr_matrix.tsv</code>（前体）、<code>report.gg_matrix.tsv</code>/<code>report.unique_genes_matrix.tsv</code>（基因/特异基因），另有 <code>report.protein_description.tsv</code>；均已按 1% FDR 过滤、可直接用于 Excel/R/Python</td></tr>
+</table>
+<p>进度查看三件套：<code>tail -f 作业号.out</code>（实时，推荐）、<code>grep "\[" 作业号.out</code>（只显示带进度标记 <code>[</code> 的行）、<code>top -u 你的账号</code>（确认进程在跑、CPU 占用是否合理）。命令不懂就看下方速记框。</p>
+<div class="box tip"><span class="t">查看类命令速记（Windows 视角）</span>
+<code>tail -f 文件</code>＝盯着文件“尾部”，新内容自动追加显示（日志实时滚动；想停止查看按 <span class="kbd">Ctrl+C</span>——只停查看，不影响作业）；<code>grep "关键词" 文件</code>＝只列出文件里含关键词的行（搜日志很方便）；<code>cat 文件</code>＝把整个文件内容打印到屏幕（适合小文件）；<code>top</code>＝Linux 版任务管理器（按 <span class="kbd">q</span> 退出）；<code>ls -l</code>＝详细列出文件与大小。
+</div>
+<div class="box info"><span class="t">主报告（.parquet）下游过滤建议（官方）</span>
+主报告设计为“先记录一切、由你过滤”：常用过滤为 run-specific <code>Q.Value ≤ 0.01–0.05</code>（DIA-NN 默认已按 5% 过滤写入）、<code>Global.Q.Value ≤ 0.01</code>（全局前体 1%）、<code>Global.PG.Q.Value ≤ 0.01</code>（全局蛋白组 1%）；<code>*.matrix.tsv</code> 已滤好可直接用。q-value 只用于筛选报告行，先过滤再做缺失值填充/统计。</div>
+</section>
+
+<!-- ===================== 4.4 ===================== -->
+<section id="s5">
+<h2>4.4 DIA-NN 常见问题（团队亲历）</h2>
+<div class="box warn"><span class="t">① 报错 Illegal instruction（作业提交后立即失败）</span>
+现象：.err 中出现 <code>Illegal instruction</code> 且行号指向 DIA-NN 命令行。排查顺序：
+1) <b>检查作业目录文件是否齐全</b>——fasta、谱库、所有 raw 是否真的都在并可读（团队曾因目录少拷贝几个文件，64 核上反复失败，补齐后 1 小时即跑完）；
+2) 换 <b>32 核 cu-1 队列</b>再试：本组实测平台容器在部分 64 核（cpuPartition，Platinum 8358）节点出现指令集不兼容，32 核 cu-1（Gold 6242）稳定；
+3) 核对命令是否缺 <code>\</code> 续行、参数是否抄错。
+</div>
+<div class="box warn"><span class="t">② 日志长时间不更新 / report.out 不增长</span>
+先 <code>top -u 账号</code> 确认进程存活与 CPU%；若进程在但输出文件不动，多为程序仍在前期阶段（建库预测较慢）；若进程已消失，检查 <code>.err</code> 末尾。注意：<b>只有 sbatch 作业才有“作业号.out”</b>，salloc 交互式无此文件——交互式请把输出重定向到文件（<code>&gt; xxx.out 2&gt;&amp;1</code>：<code>&gt;</code>＝“把屏幕输出写入文件”，<code>2&gt;&amp;1</code>＝报错信息也一并写入，整段照抄即可）或直接看终端。平台手册页的旧命令常缺少重定向，导致报错信息刷屏并误以为 Xshell 崩溃。
+</div>
+<div class="box warn"><span class="t">③ 线程数（--threads）与核数怎么配</span>
+<b>结论：32 核节点申请 64 核、跑 64 线程可以正常排队运行</b>（组内实测；早期“32 核只能跑 32 线程”“64 线程不让跑/反而更慢”的说法不准确，已作废，本册 4.1 铁律③同此口径）。写法：<code>#SBATCH --ntasks-per-node=64</code>＋命令里 <code>--threads 64</code>，两处数字保持一致即可。但要认清：cu-1 为 32 物理核（超线程 64 逻辑核），超线程对 DIA-NN 这类计算密集流程<b>通常没有额外加速</b>——32 与 64 哪个更快以<b>实测为准</b>（同一节点各跑一小批数据对比耗时即可）。想提速优先拆多个作业并行（见《HPC 使用入门》3.4 团队经验③）。内存参考：官方估算约 0.5 GB/百万个库前体（可变修饰多、宏蛋白组会更高）；cu-1 单节点 192 GB 跑常规人/鼠预测库（百万级前体）绰绰有余，不必申请多节点。
+</div>
+</section>
+
+<div class="box info"><span class="t">版本记录</span>
+v1.0（2026-09-04）：系列分册化第 1 版。本册＝系列第 2 册《DIA-NN 数据分析（sbatch）》，自《DIA-NN 与 FragPipe 在 SZBL HPC 上的使用指南》v1.2 拆分，沿用原第 4 章编号（4.0–4.4）；内容与 v1.2 一致，仅重组结构并改写跨册引用。综合版 v1.0–v1.2 完整历史见《HPC 使用入门》（第 1 册）第五章版本记录。</div>
+
+</main>
+
+<footer>
+本系列指南由杨卡课题组生成，仅供课题组内部学习交流；所有资源路径、价格、命令均以 SZBL HPC 平台与 DIA-NN 官方最新发布为准。
+同目录配套分册：<a href="1-HPC使用入门.html">《HPC 使用入门》</a> · 本册 · <a href="3-FragPipe数据分析-salloc.html">《FragPipe 数据分析（salloc）》</a>
+生成工具链：官方手册 PDF / 官方 DIA-NN README / 收费标准 DOCX 文本提取 → 要点整理 → 单文件 HTML（可离线打开、无外部依赖）。
+</footer>
+
+</body>
+</html>

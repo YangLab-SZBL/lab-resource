@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FragPipe 数据分析指南（salloc 图形界面）· SZBL HPC · 分册 3/3</title>
+<style>
+:root{
+  --brand:#1b5e8f; --brand-d:#123c5c; --accent:#e8a33d;
+  --bg:#f5f7fa; --card:#ffffff; --ink:#2b3440; --sub:#5f6b7a;
+  --line:#dde3ea; --code-bg:#0f1c2b; --code-ink:#d7e3f0;
+  --ok:#1d7a4f; --ok-bg:#e8f6ee; --warn:#9a6b00; --warn-bg:#fff6e0;
+  --bad:#a33131; --bad-bg:#fdecec; --info:#255b8a; --info-bg:#e8f1fa;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);
+ font:15px/1.75 "Segoe UI","Microsoft YaHei",system-ui,-apple-system,sans-serif}
+header.hero{background:linear-gradient(135deg,var(--brand-d),var(--brand) 60%,#2d7bb5);
+ color:#fff;padding:34px 24px 28px}
+header.hero .wrap{max-width:1080px;margin:0 auto}
+header.hero h1{margin:0 0 8px;font-size:26px;letter-spacing:.5px}
+header.hero p.meta{margin:4px 0;opacity:.92;font-size:13.5px}
+.badges{margin-top:14px;display:flex;flex-wrap:wrap;gap:8px}
+.badges span{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.35);
+ border-radius:20px;padding:3px 12px;font-size:12.5px}
+nav.toc{position:sticky;top:0;z-index:50;background:#fff;border-bottom:1px solid var(--line);
+ box-shadow:0 2px 6px rgba(20,40,60,.06)}
+nav.toc .wrap{max-width:1080px;margin:0 auto;display:flex;overflow-x:auto;gap:2px;padding:0 8px}
+nav.toc a{white-space:nowrap;padding:11px 13px;font-size:13.5px;color:var(--sub);
+ text-decoration:none;border-bottom:3px solid transparent}
+nav.toc a:hover{color:var(--brand)}
+main{max-width:1080px;margin:0 auto;padding:26px 24px 80px}
+section{margin-top:34px}
+h2{font-size:21px;color:var(--brand-d);border-left:5px solid var(--accent);
+ padding-left:12px;margin:0 0 14px}
+h3{font-size:16.5px;color:var(--brand);margin:26px 0 8px}
+h4{font-size:14.5px;margin:18px 0 6px;color:#3b4a5a}
+p{margin:8px 0}
+a{color:#1660a8}
+a:hover{text-decoration:none}
+code{background:#eef2f6;border:1px solid #e2e8ef;border-radius:4px;padding:1px 6px;
+ font-family:Consolas,"Cascadia Mono",monospace;font-size:.9em;color:#1d4a73}
+pre{background:var(--code-bg);color:var(--code-ink);border-radius:8px;padding:14px 16px;
+ overflow-x:auto;font-size:13px;line-height:1.6;margin:10px 0}
+pre code{background:none;border:none;padding:0;color:inherit;font-size:inherit}
+pre .cm{color:#7f9ab5;font-style:italic}
+pre .k{color:#7fd0ff}
+pre .f{color:#f0b45e}
+pre .s{color:#9ee08a}
+.kbd{border:1px solid #b9c4d0;border-bottom-width:2.5px;border-radius:4px;
+ padding:0 7px;background:#f0f4f8;font-size:12.5px;font-family:Consolas,monospace}
+table{border-collapse:collapse;width:100%;margin:12px 0;background:#fff;
+ font-size:13.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:#eef4f9;color:#274b6b;font-weight:600;white-space:nowrap}
+tr:nth-child(even) td{background:#fafcfe}
+.box{border-radius:8px;padding:12px 16px;margin:12px 0;font-size:14px}
+.box .t{font-weight:700;display:block;margin-bottom:4px}
+.box.info{background:var(--info-bg);border:1px solid #c4d9ec}
+.box.info .t{color:var(--info)}
+.box.tip{background:var(--ok-bg);border:1px solid #bfe0cd}
+.box.tip .t{color:var(--ok)}
+.box.warn{background:var(--warn-bg);border:1px solid #ecd7a3}
+.box.warn .t{color:var(--warn)}
+.box.danger{background:var(--bad-bg);border:1px solid #ecc3c3}
+.box.danger .t{color:var(--bad)}
+.step{display:flex;gap:12px;margin:10px 0;align-items:flex-start}
+.step .n{flex:0 0 26px;height:26px;border-radius:50%;background:var(--brand);
+ color:#fff;display:flex;align-items:center;justify-content:center;
+ font-weight:700;font-size:13.5px;margin-top:2px}
+.step .c{flex:1}
+.chip{display:inline-block;background:#e3edf6;color:#1d5b92;border-radius:4px;
+ padding:0 8px;font-size:12.5px;margin-right:4px;white-space:nowrap}
+.src{font-size:12.5px;color:var(--sub);border-top:1px dashed #c9d3dd;padding-top:6px;margin-top:6px}
+footer{border-top:1px solid var(--line);color:var(--sub);font-size:12.5px;
+ max-width:1080px;margin:30px auto 0;padding:16px 24px 30px}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <h1>FragPipe 数据分析指南（salloc 图形界面）</h1>
+    <p class="meta">适用平台：深圳湾实验室高性能计算（HPC）<b>一号集群</b>（Slurm 调度；FragPipe 24.0 以 Singularity 容器 + X11 图形转发运行）</p>
+    <p class="meta">编制：杨卡课题组内部整理（qoder）　|　系列分册 3/3　|　版本 v1.1　|　日期 2026-09-14</p>
+    <div class="badges">
+      <span>FragPipe 24.0（GUI 容器版）</span>
+      <span>salloc 交互模式 + X11 转发</span>
+      <span>一键脚本 + 空闲自动退出</span>
+      <span>配置 DIA-NN 与 FASTA</span>
+      <span>Web 服务（FPDN_viewer）进阶</span>
+    </div>
+  </div>
+</header>
+
+<nav class="toc"><div class="wrap">
+  <a href="#s1">5.0 前提说明</a>
+  <a href="#s2">5.1 准备工作</a>
+  <a href="#s3">5.2 启动 FragPipe</a>
+  <a href="#s4">5.3 GUI 流程与配置</a>
+  <a href="#s5">5.4 结果与收尾</a>
+  <a href="#s6">六 Web 服务（进阶）</a>
+</div></nav>
+
+<main>
+
+<div class="box warn"><span class="t">使用前必读</span>
+本册由课题组内部基于平台手册、FragPipe 官方文档与团队实测整理，用于内部学习交流；界面与命令以 FragPipe 官方及平台最新发布为准。本册内容自综合版 v1.2 拆出，章节沿用原第 5/6 章编号（5.0–5.4、六），正文中“5.x”均指本册小节。
+</div>
+<div class="box tip"><span class="t">本册定位与阅读前置（先花 1 分钟确认）</span>
+本册＝系列第 3 册，聚焦 <b>用 FragPipe 图形界面（salloc 交互模式）分析数据</b>：含 X11 图形转发准备、启动 FragPipe、GUI 操作流程（DIA/TMT 工作流、DIA-NN 与 FASTA 配置）与收尾。阅读前置：
+① 会登录一号集群、会 salloc 申请节点（不会先读《HPC 使用入门》（<a href="1-HPC使用入门.html">第 1 册</a>）第三章）；
+② 想理解 DIA 搜库背后的 DIA-NN 参数含义（漏切/修饰/谱库/fasta 口径）——见《DIA-NN 数据分析（sbatch）》（<a href="2-DIA-NN数据分析-sbatch.html">第 2 册</a>）4.1 铁律与说明框（与 FragPipe 内置 DIA-NN 同一引擎，参数语义一致）。
+系列导航：<a href="1-HPC使用入门.html">① HPC 使用入门</a> · <a href="2-DIA-NN数据分析-sbatch.html">② DIA-NN 数据分析</a> · 本册</div>
+
+<!-- ===================== 5.0 ===================== -->
+<section id="s1">
+<h2>5.0 前提说明</h2>
+<p>FragPipe 是图形化软件（含 MSFragger 搜库、TMT 定量、DIA 流程），而集群的计算节点上没有显示器，因此需要靠 <b>X11 转发</b>把“软件窗口的画面”经网络传到你面前电脑上显示——软件本身仍在集群上运行，观感类似远程桌面。实现方式有二：网页桌面（5.1 方式 A，无需在本机装任何东西）或本地 X server（方式 B）。平台已部署 FragPipe 24.0 镜像：</p>
+<pre><code>/lustre/software/fragpipe/24.0/fragpipe-24.0-local.sif
+module load singularity/ce-3.8.0</code></pre>
+<p class="src">若使用中发现平台 FragPipe/DIA-NN 版本偏旧，可向平台反馈，软件更新由平台负责。</p>
+</section>
+
+<!-- ===================== 5.1 ===================== -->
+<section id="s2">
+<h2>5.1 准备工作（二选一）</h2>
+<table>
+<tr><th>方式</th><th>做法</th><th>备注</th></tr>
+<tr><td><b>A. SCOW Web 桌面</b>（推荐，无需本地 X 软件）</td><td>浏览器打开 <code>http://hpc.szbl.ac.cn</code>，用<b>集群账号密码</b>登录门户（网页系统名 SCOW，官方手册首页即有入口）→ “登录集群 → 桌面 → 新建桌面（登录节点）→ 连接”，得到一个网页版 Linux 桌面</td><td>在网页桌面里打开终端执行 5.2 命令，FragPipe 图形窗口会直接显示在这个网页桌面中</td></tr>
+<tr><td><b>B. 本地 X11 转发</b></td><td>本机装 X server（Xmanager / MobaXterm），SSH 客户端开启 X11 forwarding，<code>ssh -Y 节点</code> 连入</td><td>画图/弹窗可显示到本机（<code>xclock</code> 可自测）</td></tr>
+</table>
+</section>
+
+<!-- ===================== 5.2 ===================== -->
+<section id="s3">
+<h2>5.2 在计算节点上启动 FragPipe（窗口版）</h2>
+<p>两种方式二选一：<b>方式一（手动）</b>逐条敲命令，适合想了解每一步细节的同事；<b>方式二（推荐）</b>用配套脚本 <code>fragpipe_gui.sh</code> 一键启动，并自带“空闲自动退出”——搜索完成后长时间无人操作时自动关闭 FragPipe 并释放节点，避免忘记退出一直烧核时。</p>
+
+<h3>方式一：手动命令（逐步执行）</h3>
+<pre><code><span class="cm"># 1) 申请 32 核节点并登录（务必走这条，FragPipe 需要计算节点资源）</span>
+salloc -N 1 -n 32          <span class="cm"># 默认 cu-1；也可 -p cu-debug -N 1 -n 32 快速测试</span>
+ssh -Y cuXXX               <span class="cm"># 登录计算节点（-Y 开启 X11 转发，画图必需）</span>
+
+<span class="cm"># 2) 进入数据目录并加载环境</span>
+cd ~/你的分析目录
+module load singularity/ce-3.8.0
+
+<span class="cm"># 3) 启动 FragPipe GUI（弹出图形窗口即成功；整块照抄即可，--bind/--env 是容器“接线”参数，暂不必理解）</span>
+singularity exec \
+  --writable-tmpfs \
+  --bind $HOME/.Xauthority \
+  --env XAUTHORITY=$HOME/.Xauthority \
+  --env LC_ALL=C.UTF-8 \
+  --env LANG=C.UTF-8 \
+ /lustre/software/fragpipe/24.0/fragpipe-24.0-local.sif \
+  /fragpipe_bin/fragpipe-24.0/fragpipe-24.0/bin/fragpipe</code></pre>
+<div class="box tip"><span class="t">提示</span><b>两种方式首次启动都一样</b>：初始化需要较长时间（终端持续输出、界面可能 5～20 分钟才出现），<b>不要误以为卡死而中断</b>；看到初始化步骤完整跑完才算就绪。用 SCOW 桌面方式时，可最小化窗口等待。</div>
+
+<h3>方式二（推荐）：一键脚本 fragpipe_gui.sh</h3>
+<p>配套脚本 <code>fragpipe_gui.sh</code> 与本指南 HTML <b>放在同一文件夹</b>：把它上传到集群（任意目录，例如 <code>~/scripts/</code>），然后在<b>计算节点</b>上运行。脚本已内置方式一的全部启动命令，并自带“空闲看门狗”；FragPipe 会在<b>你运行脚本时所在的目录</b>工作，所以先 <code>cd</code> 到数据目录再运行。</p>
+<pre><code><span class="cm"># 前置同方式一：登录节点 salloc → ssh -Y 进入计算节点 → 进入数据目录</span>
+salloc -N 1 -n 32
+ssh -Y cuXXX
+cd ~/你的分析目录
+
+<span class="cm"># 一条命令：启动 FragPipe + 自动看管（默认连续 30 分钟无操作自动退出）</span>
+<span class="cm"># 注意换成脚本实际所在路径（示例假定脚本放在 ~/scripts/）</span>
+bash ~/scripts/fragpipe_gui.sh
+
+<span class="cm"># 想延长空闲时间（例如 60 分钟）时：</span>
+bash ~/scripts/fragpipe_gui.sh 60</code></pre>
+<p>脚本帮你完成的事：</p>
+<div class="step"><div class="n">1</div><div class="c"><b>启动前自检</b>：没开图形转发（缺 <code>DISPLAY</code>）会提醒改用 <code>ssh -Y</code>；确认当前节点确实属于你的 salloc 作业，防止误在登录节点运行；<code>module load singularity</code> 已内置，无需手动敲。</div></div>
+<div class="step"><div class="n">2</div><div class="c"><b>看门狗监测</b>：每分钟统计你名下所有进程（含 MSFragger/DIA-NN 子进程）的 CPU 时间增量——搜索运行中<b>绝不会误退</b>；搜索已完成且连续 30 分钟无计算活动，才判定“无人使用”。</div></div>
+<div class="step"><div class="n">3</div><div class="c"><b>自动收尾</b>：先关闭 FragPipe（最多等 30 秒），再 <code>scancel</code> 你的作业释放节点。届时 ssh 会话会断开、退回登录节点，属正常现象，不是报错。</div></div>
+<div class="step"><div class="n">4</div><div class="c"><b>想提前走</b>：直接关闭 FragPipe 窗口（脚本立即收尾）；或在这个终端按 <span class="kbd">Ctrl</span>+<span class="kbd">C</span>（立即收尾退出）。</div></div>
+<div class="box warn"><span class="t">“自动退出”的判定口径</span>为“连续无计算活动”：搜索在跑时绝不触发；触发前 5 分钟终端会打印提醒；你继续操作任务（CPU 恢复活跃）即重新计时。想整段保留更久，用更大的分钟数（如 <code>bash fragpipe_gui.sh 120</code>）。注意：脚本收尾会 <code>scancel</code> 整个作业——若该节点上还有你的其他任务在跑，请先处理或不用本脚本。</div>
+</section>
+
+<!-- ===================== 5.3 ===================== -->
+<section id="s4">
+<h2>5.3 GUI 操作流程与关键配置（与本地 FragPipe 一致）</h2>
+<div class="step"><div class="n">1</div><div class="c"><b>Workflow 模块</b>：DIA 数据选 <code>DIA_SpecLib_Quant</code>；TMT 数据按标记数选 <code>TMT10</code>（10 标）或 <code>TMT16</code>（16 标及以上）。</div></div>
+<div class="step"><div class="n">2</div><div class="c"><b>添加文件</b>：点 “Add files” 加入谱图文件（选对 Raw/文件类型）；可在左侧 “Set DDA / Set DIA” 设定数据模式、添加生物学重复。</div></div>
+<div class="step"><div class="n">3</div><div class="c"><b>Save as manifest</b>：保存为 manifest 文件，下次分析 “Load manifest” 一键载入，无需重复设置。</div></div>
+<div class="step"><div class="n">4</div><div class="c"><b>Database 模块（FASTA 配置）</b>：加载 fasta（可 Download 或 Browse 上传）；界面显示 <code>decoys: 50%</code> 属正常默认（FragPipe 自动加 decoy，无需手工混入 decoy 序列）。</div></div>
+<div class="step"><div class="n">5</div><div class="c"><b>Run 模块</b>：设置输出位置 → 先点 <b>Dry run</b> 检查流程无报错 → 再点 <b>RUN</b> 正式运行。</div></div>
+<div class="step"><div class="n">6</div><div class="c"><b>TMT 数据额外一步</b>：RUN 前须回到上方 workflow 输入数据处，对通道（channel）做注释（标签对应关系）。</div></div>
+<div class="box info"><span class="t">DIA-NN 在 FragPipe 中的配置（DIA 工作流）</span>
+选择 <code>DIA_SpecLib_Quant</code>（DIA 搜库定量）工作流后，FragPipe 会调用<b>内置的 DIA-NN</b> 完成 DIA 数据的搜库与定量，界面上与之相关的参数区（workflow 展开后的 DIA-NN 模块）一般<b>保持默认即可</b>。三个口径要点：<b>① FASTA</b>——Database 模块加载的 fasta 同时供 DIA-NN 使用，建议与《DIA-NN 数据分析》分册（第 2 册）同口径：reviewed 序列、不手工混 decoy（FragPipe 自动加）、contaminant 按需；<b>② 谱库</b>——可指定已有谱库，或让 FragPipe 用 FASTA 生成（library-free 直搜，等同分册 2 建库逻辑）；<b>③ 酶切与修饰</b>——漏切数、可变修饰等参数与分册 2 命令行版 DIA-NN 语义一致（同一引擎；漏切/修饰在建库端定格，后期收紧需重新生成谱库）。具体界面选项随 FragPipe 版本略有差异，以实际界面为准；参数取舍疑问可对照分册 2 的 4.1 铁律与说明框。</div>
+<div class="box info"><span class="t">其他设置</span>想自定义/增加修饰位点：在 <b>MSFragger 模块</b>的红色区域选择与自定义。FragPipe 各模块更详细的原理与结果解释，参考官网 “Using FragPipe” 文档。</div>
+</section>
+
+<!-- ===================== 5.4 ===================== -->
+<section id="s5">
+<h2>5.4 结果与收尾</h2>
+<p>输出目录中重点关注 <b>dia-quant-output</b> 文件夹（DIA 定量结果，一般直接对该文件夹内容做下游分析）。GUI 跑批会占住计算节点，界面可挂后台；正式大批量分析仍建议转成命令行/sbatch 方式执行（见分册 2），避免图形会话断线影响。</p>
+<div class="box danger"><span class="t">用完释放节点</span>分析结束关闭 FragPipe 窗口后，同样要 <b>两次 <code>exit</code></b>（退出计算节点 + 退出 salloc），或 <code>scancel JOBID</code>，防止一直烧核时。<b>若用 5.2 方式二（fragpipe_gui.sh）启动，收尾已由脚本自动完成</b>（自动 scancel），无需再手动退出。</div>
+</section>
+
+<!-- ===================== 6 ===================== -->
+<section id="s6">
+<h2>六、课题组容器 Web 服务（FPDN_viewer 等）经验（进阶）</h2>
+<p>本章写给“要把分析工具做成网页给组里共用”的同事，属<b>进阶内容</b>：只做自己数据分析的新手可<b>直接跳过</b>，不影响前面各章。FPDN_viewer 一类图形化查看器用于把 DIA-NN/FragPipe 结果以网页形式分享查看。</p>
+<p>课题组在集群容器环境部署过图形化查看器（如 FPDN_viewer，Shiny 应用）。此类“常驻网页服务”与普通作业不同，几点经验备忘：</p>
+<div class="step"><div class="n">1</div><div class="c"><b>服务需手动拉起并保持运行</b>：在 Web 门户/容器作业页面启动容器服务，复制终端给出的访问地址（形如 <code>http://10.68.247.45:6080/ai-forward/...</code>）分享给组内使用。初始化界面提示“约 120 小时”等长时任务提示属正常，可放心等待或直接使用。</div></div>
+<div class="step"><div class="n">2</div><div class="c"><b>服务在后台持续运行并计费</b>：关闭浏览器页面<b>不会</b>停止服务——容器服务等同作业，一直按核时/存储计费。<b>用毕请及时 Stop/删除</b>容器作业（平台推荐“用时拉起、不用即停”）。</div></div>
+<div class="step"><div class="n">3</div><div class="c"><b>分享链接即可访问</b>：对方无需 HPC 账号，只要您的容器服务在运行即可打开链接使用；但<b>一旦您 Stop 或删掉作业，所有人立即无法访问</b>，分享前请确认使用时段。</div></div>
+<div class="step"><div class="n">4</div><div class="c"><b>别人正在用时不要随手 Stop</b>：如组内同事正在使用该网页服务，停止操作会影响他们（先沟通再停）。</div></div>
+</section>
+
+<div class="box info"><span class="t">版本记录</span>
+v1.0（2026-09-04）：系列分册化第 1 版。本册＝系列第 3 册《FragPipe 数据分析（salloc）》，自《DIA-NN 与 FragPipe 在 SZBL HPC 上的使用指南》v1.2 拆分，沿用原第 5/6 章编号（5.0–5.4、六）；内容与 v1.2 一致，另补充“DIA-NN 在 FragPipe 中的配置”引导说明。综合版 v1.0–v1.2 完整历史见《HPC 使用入门》（第 1 册）第五章版本记录。
+v1.1（2026-09-14）：5.2 在手动方法后新增“方式二（推荐）：一键脚本 fragpipe_gui.sh”（一键启动 + 空闲看门狗自动收尾 + 自动 scancel 释放节点）；5.4“用完释放节点”联动补充；配套脚本文件 fragpipe_gui.sh 与本册同目录。</div>
+
+</main>
+
+<footer>
+本系列指南由杨卡课题组生成，仅供课题组内部学习交流；所有资源路径、价格、命令均以 SZBL HPC 平台与 FragPipe 官方最新发布为准。
+同目录配套分册：<a href="1-HPC使用入门.html">《HPC 使用入门》</a> · <a href="2-DIA-NN数据分析-sbatch.html">《DIA-NN 数据分析（sbatch）》</a> · 本册
+生成工具链：官方手册 PDF / 收费标准 DOCX 文本提取 → 要点整理 → 单文件 HTML（可离线打开、无外部依赖）。
+</footer>
+
+</body>
+</html>

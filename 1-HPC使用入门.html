@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SZBL HPC 使用入门（一号集群）· 分册 1/3</title>
+<style>
+:root{
+  --brand:#1b5e8f; --brand-d:#123c5c; --accent:#e8a33d;
+  --bg:#f5f7fa; --card:#ffffff; --ink:#2b3440; --sub:#5f6b7a;
+  --line:#dde3ea; --code-bg:#0f1c2b; --code-ink:#d7e3f0;
+  --ok:#1d7a4f; --ok-bg:#e8f6ee; --warn:#9a6b00; --warn-bg:#fff6e0;
+  --bad:#a33131; --bad-bg:#fdecec; --info:#255b8a; --info-bg:#e8f1fa;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);
+ font:15px/1.75 "Segoe UI","Microsoft YaHei",system-ui,-apple-system,sans-serif}
+header.hero{background:linear-gradient(135deg,var(--brand-d),var(--brand) 60%,#2d7bb5);
+ color:#fff;padding:34px 24px 28px}
+header.hero .wrap{max-width:1080px;margin:0 auto}
+header.hero h1{margin:0 0 8px;font-size:26px;letter-spacing:.5px}
+header.hero p.meta{margin:4px 0;opacity:.92;font-size:13.5px}
+.badges{margin-top:14px;display:flex;flex-wrap:wrap;gap:8px}
+.badges span{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.35);
+ border-radius:20px;padding:3px 12px;font-size:12.5px}
+nav.toc{position:sticky;top:0;z-index:50;background:#fff;border-bottom:1px solid var(--line);
+ box-shadow:0 2px 6px rgba(20,40,60,.06)}
+nav.toc .wrap{max-width:1080px;margin:0 auto;display:flex;overflow-x:auto;gap:2px;padding:0 8px}
+nav.toc a{white-space:nowrap;padding:11px 13px;font-size:13.5px;color:var(--sub);
+ text-decoration:none;border-bottom:3px solid transparent}
+nav.toc a:hover{color:var(--brand)}
+main{max-width:1080px;margin:0 auto;padding:26px 24px 80px}
+section{margin-top:34px}
+h2{font-size:21px;color:var(--brand-d);border-left:5px solid var(--accent);
+ padding-left:12px;margin:0 0 14px}
+h3{font-size:16.5px;color:var(--brand);margin:26px 0 8px}
+h4{font-size:14.5px;margin:18px 0 6px;color:#3b4a5a}
+p{margin:8px 0}
+a{color:#1660a8}
+a:hover{text-decoration:none}
+code{background:#eef2f6;border:1px solid #e2e8ef;border-radius:4px;padding:1px 6px;
+ font-family:Consolas,"Cascadia Mono",monospace;font-size:.9em;color:#1d4a73}
+pre{background:var(--code-bg);color:var(--code-ink);border-radius:8px;padding:14px 16px;
+ overflow-x:auto;font-size:13px;line-height:1.6;margin:10px 0}
+pre code{background:none;border:none;padding:0;color:inherit;font-size:inherit}
+pre .cm{color:#7f9ab5;font-style:italic}
+pre .k{color:#7fd0ff}
+pre .f{color:#f0b45e}
+pre .s{color:#9ee08a}
+.kbd{border:1px solid #b9c4d0;border-bottom-width:2.5px;border-radius:4px;
+ padding:0 7px;background:#f0f4f8;font-size:12.5px;font-family:Consolas,monospace}
+table{border-collapse:collapse;width:100%;margin:12px 0;background:#fff;
+ font-size:13.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:#eef4f9;color:#274b6b;font-weight:600;white-space:nowrap}
+tr:nth-child(even) td{background:#fafcfe}
+.box{border-radius:8px;padding:12px 16px;margin:12px 0;font-size:14px}
+.box .t{font-weight:700;display:block;margin-bottom:4px}
+.box.info{background:var(--info-bg);border:1px solid #c4d9ec}
+.box.info .t{color:var(--info)}
+.box.tip{background:var(--ok-bg);border:1px solid #bfe0cd}
+.box.tip .t{color:var(--ok)}
+.box.warn{background:var(--warn-bg);border:1px solid #ecd7a3}
+.box.warn .t{color:var(--warn)}
+.box.danger{background:var(--bad-bg);border:1px solid #ecc3c3}
+.box.danger .t{color:var(--bad)}
+.step{display:flex;gap:12px;margin:10px 0;align-items:flex-start}
+.step .n{flex:0 0 26px;height:26px;border-radius:50%;background:var(--brand);
+ color:#fff;display:flex;align-items:center;justify-content:center;
+ font-weight:700;font-size:13.5px;margin-top:2px}
+.step .c{flex:1}
+.chip{display:inline-block;background:#e3edf6;color:#1d5b92;border-radius:4px;
+ padding:0 8px;font-size:12.5px;margin-right:4px;white-space:nowrap}
+.src{font-size:12.5px;color:var(--sub);border-top:1px dashed #c9d3dd;padding-top:6px;margin-top:6px}
+footer{border-top:1px solid var(--line);color:var(--sub);font-size:12.5px;
+ max-width:1080px;margin:30px auto 0;padding:16px 24px 30px}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <h1>SZBL HPC 使用入门（一号集群）</h1>
+    <p class="meta">适用平台：深圳湾实验室高性能计算（HPC）<b>一号集群</b>（Slurm 调度；本系列面向无 Linux 基础新手，FragPipe 与 DIA-NN 均已部署于一号集群）</p>
+    <p class="meta">编制：杨卡课题组内部整理（qoder）　|　系列分册 1/3　|　版本 v1.1　|　日期 2026-09-16</p>
+    <div class="badges">
+      <span>新手友好（零基础可读）</span>
+      <span>登录 / 文件传输 / 计费</span>
+      <span>Slurm 作业调度</span>
+      <span>通用 FAQ 与官方资源</span>
+    </div>
+  </div>
+</header>
+
+<nav class="toc"><div class="wrap">
+  <a href="#s0">〇 新手热身</a>
+  <a href="#s1">一 账号与登录</a>
+  <a href="#s2">二 资源与计费</a>
+  <a href="#s3">三 Slurm 作业</a>
+  <a href="#s4">四 常见问题</a>
+  <a href="#s5">五 官方资源与支持</a>
+</div></nav>
+
+<main>
+
+<div class="box warn"><span class="t">使用前必读</span>
+本系列指南由课题组内部基于官方手册（<i>HPC User Manual · SZBL HPC Core Group</i>）、平台收费标准（2026-06-24 版）以及团队实际使用经验整理，用于内部学习交流。
+命令与价格以官方最新公告为准；如有出入，请优先遵循平台管理员意见或在线手册 <code>http://hpc.szbl.ac.cn/manual/</code>。
+本册为系列第 1 册《HPC 使用入门》：〇~三章是所有分析（DIA-NN / FragPipe）的公共基础，四、五章为通用 FAQ 与官方资源。
+</div>
+<div class="box tip"><span class="t">系列导航（共三分册，按 ①→②/③ 顺序阅读）</span>
+① 本册《HPC 使用入门》——登录、传文件、计费、Slurm 提交作业（新手必读）；
+② <a href="2-DIA-NN数据分析-sbatch.html">《DIA-NN 数据分析（sbatch）》（分册 2/3）</a>——建库→搜库定量两阶段、实时看作业、结果文件解读；
+③ <a href="3-FragPipe数据分析-salloc.html">《FragPipe 数据分析（salloc）》（分册 3/3）</a>——图形界面分析，配置 DIA-NN 与 FASTA、X11 图形转发。</div>
+
+<!-- ===================== 0 ===================== -->
+<section id="s0">
+<h2>〇、开始之前：写给没碰过 Linux 的你（10 分钟热身）</h2>
+<p>本指南后面的操作大量发生在“黑窗口里敲命令”。若你此前只用 Windows 双击软件、从未接触过 Linux，请先读完本节——只需建立 3 个画面、混个脸熟几个词，后面每章的操作就都能看懂了。</p>
+
+<h3>0.1 画面一：集群是一间“餐厅”（登录节点＝大厅，计算节点＝厨房）</h3>
+<p>SZBL HPC 集群不是一台电脑，而是几十台服务器协同工作的整体。先理解三个角色：</p>
+<table>
+<tr><th>角色</th><th>是什么</th><th>对你的意义</th></tr>
+<tr><td><b>登录节点</b>（大厅）</td><td>用 Xshell/终端连上后所在的地方</td><td>只能在这里做“准备工作”：传文件、建目录、写脚本、敲命令<b>提交任务</b>——它本身不跑真正的分析，也不要在上面直接跑 DIA-NN</td></tr>
+<tr><td><b>计算节点</b>（厨房）</td><td>几十台真正干活的服务器</td><td>分析实际运行的地方；不能直接进入，必须先通过 Slurm 调度器<b>申请</b>到一台（salloc 或 sbatch，见下）</td></tr>
+<tr><td><b>共享存储</b>（公用冰箱）</td><td>登录节点与计算节点看到的是<b>同一份文件</b></td><td>在登录节点上传的 .raw，作业在计算节点直接能读；集群上文件地址形如 <code>/lustre/账号名/…</code></td></tr>
+</table>
+<p>“向调度器申请计算节点”有两种方式，后面每章都会用到，务必分清：</p>
+<table>
+<tr><th>方式</th><th>类比</th><th>特点</th></tr>
+<tr><td><code>salloc</code>（交互式）</td><td>餐厅“包间现做”</td><td>申请到节点后你登录进去现场操作、盯着输出；<b>人必须守着，用完手动“退房”（两次 exit），否则一直计费</b>——只适合短调试</td></tr>
+<tr><td><code>sbatch</code>（批处理）</td><td>“点外卖”</td><td>把命令写进 .sh 脚本交给调度器，它排队→自动运行→结束自动停止计费；期间断网、关机都不影响——<b>正式分析一律用这个</b></td></tr>
+</table>
+
+<h3>0.2 画面二：一切操作靠“敲命令”，没有按钮</h3>
+<p>集群上所有操作＝输入一行文字、按回车。每行格式固定：<code>程序名 参数1 参数2 …</code>（参数告诉程序做什么、对谁做）。参数你看不懂没关系——本指南每条命令都可以<b>整行直接复制</b>：Xshell 中默认<b>单击右键即粘贴</b>（MobaXterm 用 <span class="kbd">Shift</span>+<span class="kbd">Insert</span>），再按回车执行。屏幕行首的 <code>$</code> 等符号叫“提示符”，只表示“终端就绪、等你输入命令”，<b>复制时不要把它带进去</b>。</p>
+<p>命令执行后<b>没有报错通常就是成功</b>；报错了也别慌——把红字整段截图，先到本册第四章 FAQ 里找，或问组里跑过的人。出现频率最高的几个命令与 Windows 习惯对照如下：</p>
+<table>
+<tr><th>集群命令</th><th>作用（Windows 类比）</th></tr>
+<tr><td><code>ls</code> / <code>ls -l</code></td><td>查看当前文件夹内容（-l 附加大小的详情列表）</td></tr>
+<tr><td><code>cd 目录名</code></td><td>进入某个文件夹</td></tr>
+<tr><td><code>pwd</code></td><td>显示“我现在在哪个目录”（完整路径）</td></tr>
+<tr><td><code>mkdir 名字</code></td><td>新建文件夹（右键新建文件夹）</td></tr>
+<tr><td><code>cp / mv / rm 文件</code></td><td>复制 / 移动（也可当重命名）/ 删除——<b>rm 没有回收站</b>，删前务必想清楚</td></tr>
+<tr><td><code>cat 文件</code></td><td>把文件内容打印到屏幕（≈记事本打开看）</td></tr>
+<tr><td><code>vim 文件</code></td><td>编辑文件（本册 3.4 步骤 1 括号里有 vim 三步速记；更详细教学见分册 2《DIA-NN 数据分析》4.1“新手实操”框）</td></tr>
+</table>
+
+<h3>0.3 画面三：文件有“路径”，如同快递地址</h3>
+<p><b>目录＝文件夹</b>；<b>路径＝从“根”出发的完整地址</b>，形如 <code>/lustre/你的账号名/raw</code>（开头的 <code>/</code> 表示根，各层目录用 <code>/</code> 分隔）。每次登录后默认落在自己的<b>家目录</b>，用 <code>~</code> 表示（≈Windows 的“我的文档”，通常就是 <code>/lustre/账号名</code>）。命令里只写文件名（如 <code>diann_job.sh</code>）＝指“当前目录下的这个文件”；先 <code>pwd</code> 可确认当前目录，<code>cd /完整/路径</code> 可跳到任意目录。文件传输工具里看到的 <code>/lustre/账号名/xxx</code> 就是集群上的文件位置。</p>
+
+<h3>0.4 四个关键词先混个脸熟（后面反复出现）</h3>
+<table>
+<tr><th>关键词</th><th>一句话解释</th><th>先在哪遇到</th></tr>
+<tr><td>模块 <code>module load …</code></td><td>平台把软件预先做成“模块”，用之前执行一次加载命令（≈安装好的软件点开图标；每个新开的终端窗口都要重新加载一次）</td><td>分册 2 的 4.0 / 分册 3 的 5.0</td></tr>
+<tr><td>容器镜像 <code>.sif</code></td><td>把软件连同运行环境整体打包好的文件，拿到就能跑、无需自己安装；命令里路径照抄即可（“调度 + 容器”两套系统如何分工，见 0.5）</td><td>分册 2 的 4.0 / 分册 3 的 5.0</td></tr>
+<tr><td>作业 job / 作业号 JOBID</td><td>交给调度器的一个“任务单”，提交后返回的数字编号，查状态/看日志/取消都用它</td><td>本册 3.3</td></tr>
+<tr><td>raw / 谱库 / fasta</td><td>.raw＝质谱仪产出的原始数据；谱库（.speclib）＝已知肽段的“字典”，在数据中识别信号用；fasta＝蛋白序列文件，用于给结果注释蛋白名</td><td>分册 2 的 4.1</td></tr>
+</table>
+<h3>0.5 补一张全景图：Slurm 管机器，Singularity 管软件</h3>
+<p>常有新手问：命令里出现的 <code>salloc</code> 和 <code>singularity</code> 到底什么关系？为什么指南与脚本里会写“Slurm + Singularity 的镜像容器”？这一节把两套系统一次分清——以后看到任何一条集群命令，都可以先归位：它是在<b>“要机器”</b>，还是在<b>“跑软件”</b>。</p>
+<p>用分册 3 里 FragPipe 的启动命令做逐行拆解（其他分析同理）：</p>
+<table>
+<tr><th>命令</th><th>属于哪套系统</th><th>在干什么</th></tr>
+<tr><td><code>salloc -N 1 -n 32</code></td><td><b>Slurm</b>（调度器）</td><td>向集群排队申请一台 32 核计算节点（salloc＝交互式申请、sbatch＝批处理提交、squeue＝看状态、scancel＝释放，均属“要机器”，见 0.1 与第三章）</td></tr>
+<tr><td><code>ssh -Y cuXXX</code></td><td>接续 Slurm</td><td>登进刚分给你的那台计算节点（-Y 开启 X11 图形转发，窗口类程序必需）</td></tr>
+<tr><td><code>module load singularity/ce-3.8.0</code></td><td><b>Singularity</b>（容器引擎）</td><td>加载容器工具——“跑软件”的第一步</td></tr>
+<tr><td><code>singularity exec … fragpipe-24.0-local.sif … /bin/fragpipe</code></td><td>Singularity</td><td>以“容器”方式运行<b>镜像里的软件</b>；<code>.sif</code> 就是平台预制的软件打包文件，容器内的路径整段照抄即可</td></tr>
+</table>
+<p>为什么要这样组合？两条原因一次说透：<b>① 为什么必须 Slurm</b>——集群是共享资源，所有重计算都要经计算节点排队运行、按核时计费（登录节点只做准备工作），Slurm 就是那个“发号 + 计时”的调度器；<b>② 为什么用 Singularity 镜像</b>——软件（DIA-NN / FragPipe）连同依赖被平台预先打包成 <code>.sif</code> 镜像，你不需要安装任何东西，用时“借集装箱”运行；平台不支持 Docker，HPC 场景统一用 Singularity。</p>
+<div class="box info"><span class="t">“Slurm + Singularity 的镜像容器”——这句话到底在说什么？</span>
+它<b>不是另一种运行方式</b>，而是对上面整套运行环境的简称：<b>机器由 Slurm 发放（salloc / sbatch），软件在 Singularity 镜像里运行</b>——你刚看过的命令就是它的全部。分册 3 配套脚本 <code>fragpipe_gui.sh</code> 开头标注的“适用环境：SZBL HPC 一号集群（Slurm + Singularity；FragPipe 24.0 容器镜像）”就是这个意思（脚本内部依赖 squeue / scancel 与 singularity，换到没有这两套系统的环境就跑不了）；脚本与手动命令的关系也很简单：<b>启动命令一字不差，只是外加了自检与自动收尾</b>。启动命令里的 <code>--bind</code> / <code>--env</code> 可理解为给容器“接线”（把图形授权、语言环境接进容器里），照抄即可，无需深究。</div>
+<div class="box tip"><span class="t">阅读路线建议（分册版）</span>
+第一次上手请按 <b>① 通读本册 〇 → 一 → 二 → 三</b> 打基础；随后按需进入专册：用 DIA-NN 做定量分析读 <b>分册 2</b>（4.0-4.4），用 FragPipe 图形界面读 <b>分册 3</b>（5.0-5.4，其中 5.0/5.1 会再次用到本册三章的 salloc 与 X11 概念）。本册第四、五章（FAQ 与资源）随时回查。每章卡住时回到本节找名词解释。</div>
+</section>
+
+<!-- ===================== 1 ===================== -->
+<section id="s1">
+<h2>一、前置准备：账号申请与登录</h2>
+
+<h3>1.1 申请账号</h3>
+<div class="step"><div class="n">1</div><div class="c">打开申请页 <a href="http://hpc.szbl.ac.cn/htmls/apply.html" target="_blank">http://hpc.szbl.ac.cn/htmls/apply.html</a>，下载《集群账号申请表》并填写。</div></div>
+<div class="step"><div class="n">2</div><div class="c">课题组内部确认（抄送 PI），再发邮件给平台；一般 <b>2～3 个工作日</b>内收到开通邮件（内含<b>集群账号与密码</b>）。</div></div>
+<div class="step"><div class="n">3</div><div class="c">新账号默认仅开通主存储家目录（≈你个人的专属文件夹，类型与计费见本册 2.3）；如需 <b>全闪快速存储</b>（conda/R 环境、大 IO 作业推荐）须另行联系平台开通。</div></div>
+
+<h3>1.2 网络前提</h3>
+<p>在办公内网（高科/卫光）可直接访问；<b>外网需先登录 SZBL VPN</b>：<code>https://sslvpn.szbl.ac.cn</code>（用户名/密码同 OA）。仍无法访问时，需在 OA“新建流程 → IT 服务申请流程”中申请开通访问计算平台集群权限。</p>
+
+<h3>1.3 登录一号集群（两种常用方式）</h3>
+<p>先认识一个词：<b>堡垒机</b>＝集群的“门卫/跳板”。集群内部机器不直接对外网开放，所有连接必须先经堡垒机验证身份再转进内部（类比：先出示工牌进大楼，再刷卡进实验室）。下面两种方式任选其一走通一次，之后日常都走第 2 种（复制粘贴方便）。</p>
+<table>
+<tr><th>方式</th><th>方法</th><th>适用场景</th></tr>
+<tr><td><b>Web 堡垒机</b>（行云管家）</td><td>浏览器访问 <code>http://10.68.247.110/login.html</code> → 团队 → 主机 → 快速访问（Web 桌面），输入账号密码；建议“存为快捷方式”</td><td>配置、偶尔使用、忘记命令时（Web 端复制粘贴不便，不适合日常敲命令）</td></tr>
+<tr><td><b>本地终端 / Xshell 等</b></td><td>堡垒机会话内点击<b>“生成访问串”</b>获得串名串密码，据此在 Xshell/Putty 中建立会话（端口 8022），即可直跳集群</td><td>日常使用（推荐，复制粘贴方便）</td></tr>
+</table>
+
+<div class="box warn"><span class="t">注意：一号集群不允许绕过堡垒机直连 SSH</span>
+手册中“允许 ssh 登录”≠“允许从办公网直连”。一号集群的登录节点（login01/02、ln01/02）<b>目前仅允许通过堡垒机跳转</b>；
+二号集群（login03/04）才允许直连。日常请使用<b>串名串密码</b>方式通过堡垒机跳转，并把 Xshell 会话的保活（keep-alive）打开，避免断线。</div>
+
+<div class="box tip"><span class="t">第一次配 Xshell 的完整流程（只需配一次；卡住可对照本册第五章资源表中的官方视频教程）</span>
+<b>① 拿“访问串”</b>：浏览器登录行云管家 → 找到集群主机并打开会话/详情 → 点击<b>“生成访问串”</b>，页面会给出两串字符：一个“串名”＋一个“串密码”（可理解为堡垒机发给你的临时账号密码，过期就重新生成一次）；
+<b>② 建 Xshell 会话</b>：Xshell 菜单“文件 → 新建”→ 名称随意（如 SZBL-HPC），主机填 <code>10.68.247.110</code>，端口填 <code>8022</code> → 连接；
+<b>③ 过两道身份验证</b>：第一道输上一步的<b>串名/串密码</b>（过“门卫”）；随后出现集群节点选择菜单，按提示选一号集群登录节点（login01/02 或 ln01/02）；第二道输<b>你自己的集群账号密码</b>（开通邮件里那个，过“实验室门”）；
+<b>④ 成功标志</b>：出现 <code>账号@节点名:~$</code> 之类的提示符即可开始敲命令。若反复要求输密码，检查是否处于中文输入法（密码一律用英文半角），或访问串已过期——重新生成再试。</div>
+
+<p>登录后若出现节点选择菜单，选择一号集群登录节点（login01/login02 或 ln01/ln02）输入密码即可。常见连接信息：</p>
+<table>
+<tr><th>用途</th><th>节点 / 地址</th><th>说明</th></tr>
+<tr><td>堡垒机跳板</td><td>10.68.247.110 : 8022</td><td>行云管家，SSH 跳转入口</td></tr>
+<tr><td>一号集群登录节点</td><td>login01/02、ln01/02</td><td>提交作业、编译、软件安装（ln01/02 已可提交作业，可跑 ≤10 分钟快速测试）</td></tr>
+<tr><td>文件传输节点</td><td>mu01（10.68.247.101）、ln03 : 22</td><td>SFTP 直连，<b>使用集群账号密码</b>（非堡垒机串密码）</td></tr>
+</table>
+
+<h3>1.4 文件传输</h3>
+<p>推荐 FileZilla / WinSCP：协议 <b>SFTP</b>，主机 <code>10.68.247.101</code>，端口 <code>22</code>，使用邮件中的<b>集群账号密码</b>登录。原始谱图（.raw/.mzML）、fasta、谱库等大文件一律先上传到集群再提交作业，切勿在本地直接分析大批 DIA 数据。</p>
+<div class="box tip"><span class="t">第一次用 FileZilla（界面速成）</span>
+打开后顶部依次填：主机 <code>10.68.247.101</code>、端口 <code>22</code>、用户名与密码＝<b>集群账号密码</b>（注意：不是堡垒机串密码），点“快速连接”。成功后窗口分两栏：左＝本地电脑文件，右＝集群文件；把文件从左边拖到右边即上传（从右拖到左即下载），传整个文件夹直接拖文件夹。传输期间勿关窗口，完成后在右侧核对文件大小无误。SFTP 本质＝带加密的文件传输协议，使用体验与 Windows 资源管理器无异。</div>
+
+<h3>1.5 会话保活与长任务</h3>
+<p>网络波动导致终端断开时，正在敲的命令、正在跑的调试都会中断。把会话放进 <code>tmux</code>（一个“虚拟终端容器”，让进程挂在后台、不随断线消失）再操作即可避免。tmux 基本用法：<code>tmux</code> 新建会话并进入；中途要离开时按 <span class="kbd">Ctrl+B</span> 松开后，再按 <span class="kbd">D</span> 脱离（界面消失但里面程序继续跑）；重新连上集群后 <code>tmux attach</code> 恢复现场；彻底结束时在 tmux 界面里输入 <code>exit</code> 关闭该会话。</p>
+<div class="box tip"><span class="t">团队经验</span>真正“跑大作业”不要依赖交互终端，统一用本册 3.4 的 <b>sbatch 批处理</b>：提交后即使本机关机、断网也不影响运行，这是最稳妥的方式（DIA-NN 正式分析模板见分册 2）。</div>
+</section>
+
+<!-- ===================== 2 ===================== -->
+<section id="s2">
+<h2>二、集群资源与计费速查</h2>
+
+<h3>2.1 一号集群 CPU 队列（本指南核心用到的队列）</h3>
+<p>先看单位：价格是<b>元/核时</b>，“1 核时”＝1 个 CPU 核连续运行 1 小时。直观换算：32 核跑 1 小时＝32 核时≈1.12 元（0.035×32，见本册 2.2 表）。<b>“队列”（partition）＝一组硬件配置相同的节点</b>；提交作业时告诉调度器排哪个队即可，无需指定具体某台机器。</p>
+<table>
+<tr><th>队列（partition）</th><th>节点配置</th><th>CPU 核数</th><th>内存</th><th>内部价（元/核时）</th><th>说明</th></tr>
+<tr><td>cu-1</td><td>Intel Gold 6242 @2.8GHz×2</td><td>32</td><td>192GB</td><td>0.035</td><td>默认队列，<b>DIA-NN 主力队列</b>（推荐）</td></tr>
+<tr><td>cu-debug</td><td>同上</td><td>32</td><td>192GB</td><td>0.035</td><td>调试/短任务，约 4h 上限，测试首选</td></tr>
+<tr><td>cu-short</td><td>同上</td><td>32</td><td>192GB</td><td>0.035</td><td>短作业队列</td></tr>
+<tr><td>cu-1-h</td><td>同上</td><td>32</td><td>192GB</td><td>0.045</td><td>高优先级，插队快、单价更高</td></tr>
+<tr><td>cpuPartition</td><td>Intel Platinum 8358 @2.6GHz×2</td><td>64</td><td>256GB</td><td>0.04</td><td>64 核节点；本组平台版 DIA-NN 曾在此队列报 Illegal instruction，暂不推荐</td></tr>
+<tr><td>cpuPartition-h</td><td>同上</td><td>64</td><td>256GB</td><td>0.05</td><td>64 核高优先级</td></tr>
+<tr><td>fat-1 / fat-1-h</td><td>Platinum 8260×8</td><td>192</td><td>3072GB</td><td>0.05 / 0.06</td><td>胖节点，超大内存需求时使用</td></tr>
+</table>
+<p class="src">来源：《SZBL-高性能计算集群收费标准》（2026-06-24 生效）＋官方手册 1.7 节。GPU 队列（gpu-1/gpu-2/gpu-a100 等）按卡时计费，DIA-NN/FragPipe 纯 CPU 分析不涉及，勿把纯 CPU 作业投到 GPU 节点。</p>
+
+<h3>2.2 32 核作业费用参考（内部价估算）</h3>
+<table>
+<tr><th>任务时长</th><th>总消耗核时</th><th>费用（元）</th><th>适用场景</th></tr>
+<tr><td>10 分钟</td><td>5.33</td><td>≈0.19</td><td>短调试（cu-debug）</td></tr>
+<tr><td>1 小时</td><td>32</td><td>1.12</td><td>小规模测试</td></tr>
+<tr><td>6 小时</td><td>192</td><td>6.72</td><td>半日作业</td></tr>
+<tr><td>24 小时</td><td>768</td><td>26.88</td><td>全天作业（常见 DIA 运行时长）</td></tr>
+<tr><td>7 天</td><td>5,376</td><td>188.16</td><td>长时作业</td></tr>
+</table>
+<p class="src">按 32 核 × 0.035 元/核时估算；费用数据每周一/周四更新（非实时），计费周期为<b>上月 24 日至本月 23 日</b>，每月结算一次。</p>
+
+<h3>2.3 存储计费（课题组为单位，按天统计）</h3>
+<table>
+<tr><th>存储</th><th>免费额度</th><th>收费</th><th>用途</th></tr>
+<tr><td>主存储 lustre（家目录）</td><td>0–5 TB</td><td>5–100TB：0.8 元/TB·天</td><td>日常数据、代码、结果</td></tr>
+<tr><td>归档存储 nasfs1</td><td>无</td><td>0.4 元/TB·天</td><td>温冷数据备份（仅登录/传输节点可见）</td></tr>
+<tr><td>全闪快速存储（申请制）</td><td>work 150GB / scratch 15TB 配额</td><td>按量阶梯计费</td><td>conda/R 环境、大 IO 临时计算</td></tr>
+</table>
+<p>家目录容量查询：<code>lfs quota -u 你的账号 -h /lustre</code>（个人）、<code>lfs quota -g 组名 -h /lustre</code>（课题组）。</p>
+
+<div class="box warn"><span class="t">费用与数据安全要点</span>
+<b>① 只有“作业在运行”才产生机时费</b>——上传/下载文件、打开网页服务本身不收费；但占着节点不释放 = 持续计费（见本册 3.3）。
+<b>② 内部课题组用单位经费结算时另有 5～6 折优惠</b>（具体以平台结算为准）；若课题组年度机时＋存储消费不足 2000 元，次年 1 月可能加收 2000 元/年账户管理维护费——按需正常使用一般可避免。
+<b>③ 集群不做用户数据备份</b>，重要原始数据请自行多副本保存（本地盘 + 归档存储）。</div>
+</section>
+
+<!-- ===================== 3 ===================== -->
+<section id="s3">
+<h2>三、Slurm 作业基础（必须掌握）</h2>
+<p>第 0 章讲过：真正计算要先向 Slurm 调度器申请。本章给你一套能立刻上手的命令链：查看资源 → 申请节点 → 提交作业 → 查状态/取消，配合 0.2 的命令对照表阅读。本章是《DIA-NN 数据分析》（分册 2）与《FragPipe 数据分析》（分册 3）两册的<b>公共基础</b>，请勿跳过。</p>
+
+<h3>3.1 核心概念</h3>
+<p><span class="chip">partition/队列</span>同硬件配置的节点集合，如 cu-1、cpuPartition（用 <code>sinfo.sh</code> 输出<b>第一列</b>查看，<b>不要</b>把具体节点名如 cu029 当队列写进脚本）。</p>
+<p><span class="chip">作业状态</span>PD/PENDING 排队 · R/RUNNING 运行 · C/COMPLETED 完成 · FAIL 失败 · S/SUSPEND 挂起 · REQUEUED 重排队。用 <code>squeue -l</code> 查看（第一列 JOBID 是作业号）。</p>
+
+<h3>3.2 查看集群资源</h3>
+<pre><code><span class="cm"># 队列资源总览（partition / 空闲 / 已分配 / 节点列表）</span>
+sinfo.sh        <span class="cm">或 sinfo</span>
+<span class="cm"># 逐节点状态：状态 / 已用/空闲核数 / 负载 / GPU 分配等</span>
+pestat          <span class="cm"># 找 cpuPartition、cu-1 等队列看哪些节点空闲、每节点核数</span></code></pre>
+
+<h3>3.3 交互式申请节点（调试、GUI 程序用）</h3>
+<pre><code><span class="cm"># 申请 1 个节点、32 核；-p 指定队列（不写默认 cu-1）</span>
+salloc -p cu-debug -N 1 -n 32
+<span class="cm"># 分配成功后会显示：Granted job allocation 作业号 → 再 ssh 登录到计算节点</span>
+ssh cuXXX        <span class="cm"># cuXXX 换成上面分配到的节点名（如 cu073）；成功标志：提示符变为 账号@cuXXX</span>
+hostname         <span class="cm"># 想确认自己此刻在哪个节点，敲 hostname 即显示节点名</span></code></pre>
+<div class="box danger"><span class="t">高危：交互式作业用完必须释放！</span>
+交互式（salloc）占用的资源在您退出登录后<b>仍在后台计费</b>，务必执行 <b>两次 <code>exit</code></b>（先退出计算节点、再退出申请会话，释放 salloc 作业），或用 <code>squeue -l</code> 找到作业号后 <code>scancel JOBID</code> 释放。
+团队实际教训：曾因 salloc 后长期未释放，单笔产生 20 余元费用。运行中的计算不会自动停止计费！</div>
+
+<h3>3.4 批处理提交（sbatch，日常推荐）</h3>
+<div class="step"><div class="n">1</div><div class="c">在数据目录新建脚本（vim 编辑：<code>vim job.sh</code>，按 <span class="kbd">i</span> 进入编辑，<span class="kbd">Esc</span> 退出编辑，输入 <code>:wq</code> 保存退出）。</div></div>
+<div class="step"><div class="n">2</div><div class="c">按需填写头部 <code>#SBATCH</code> 资源申请（作业名 / 队列 / 节点数 / 每节点核数 / 时限 / 输出文件）。小知识：以 <code>#</code> 开头的行是“注释”——<code>#SBATCH</code> 行是给调度器看的点菜单（作业怎么跑），其余 <code>#</code> 行是给人看的说明，都不参与计算；修改模板时只动 <code>#SBATCH</code> 行与末尾的实际命令即可。</div></div>
+<div class="step"><div class="n">3</div><div class="c">提交：<code>sbatch job.sh</code> → 返回 “Submitted batch job 作业号”；查看 <code>squeue -l</code>；取消 <code>scancel 作业号</code>。</div></div>
+<pre><code><span class="cm">#!/bin/bash</span>
+<span class="cm">#SBATCH --job-name=demo          # 作业名</span>
+<span class="cm">#SBATCH --partition=cu-1         # 队列（32核节点；测试可换 cu-debug）</span>
+<span class="cm">#SBATCH --nodes=1                # 节点数</span>
+<span class="cm">#SBATCH --ntasks-per-node=32     # 每节点申请核数（计费依据；DIA-NN 用 --threads 配套，见分册 2 的 4.4③）</span>
+<span class="cm">#SBATCH --time=24:00:00          # 运行时限（超时会被杀死，按任务估足）</span>
+<span class="cm">#SBATCH --output=%j.out          # 标准输出（%j = 作业号，自动命名）</span>
+<span class="cm">#SBATCH --error=%j.err           # 错误输出</span>
+<span class="cm"># 下面放你的实际命令（DIA-NN / FragPipe 后台版 / 其他软件）</span>
+echo "job start: $(date)"</code></pre>
+<table>
+<tr><th>常用命令</th><th>作用</th></tr>
+<tr><td><code>squeue -l</code></td><td>查看排队/运行作业（TIME 已运行、TIME_LIMI 时限、NODELIST 所在节点）</td></tr>
+<tr><td><code>scancel JOBID</code></td><td>取消作业（可 <code>scancel 数组号_[1-5]</code> 批量取消）</td></tr>
+<tr><td><code>sacct</code></td><td>历史作业与状态</td></tr>
+<tr><td><code>scontrol show job JOBID --detail</code></td><td>作业详情（节点、CPU/GPU 分配）</td></tr>
+<tr><td><code>tail -f 作业号.out</code></td><td>实时查看运行日志（排错利器）</td></tr>
+</table>
+
+<div class="box tip"><span class="t">团队经验总结</span>
+① <b>能 sbatch 就不要 salloc</b>：批处理作业命令跑完自动结束、自动停止计费，无需人守着；交互作业易忘记释放而产生额外费用。
+② 线程数：cu-1 是 32 物理核（超线程共 64 逻辑核），<b>申请 64 核、跑 64 线程可以正常排队运行</b>（组内实测；早期“不允许/更慢”的旧经验作废，详见分册 2《DIA-NN 数据分析》的 4.4③）——但超线程对 DIA-NN 这类计算密集流程通常没有额外加速，想提速优先用 ③ 的并行拆分。
+③ 同一批样本可分多个作业并行提交（如 9 个 raw 拆成 3 个作业 ×3 文件），往往比单作业更快上机。
+④ 作业排队久？<code>sinfo.sh</code> 看看是否有其他课题组集中投递；可等待或换空闲队列。</div>
+</section>
+
+<!-- ===================== 4 ===================== -->
+<section id="s4">
+<h2>四、常见问题（FAQ）</h2>
+<p>以下为集群<b>通用问题</b>（登录/计费/作业等）；DIA-NN 软件本身的常见问题见分册 2 的 4.4，FragPipe 相关见分册 3。</p>
+<table>
+<tr><th style="width:30%">问题</th><th>解答</th></tr>
+<tr><td>为什么 Xshell 连不上 ln01？2 号集群却能连</td><td>一号集群只允许<b>经堡垒机跳转</b>（Web 或“串名串密码”方式，端口 8022），不允许直连；二号集群才允许直连。手册中 “SSH 登录 = Yes” 均指经堡垒机。</td></tr>
+<tr><td>sbatch 提交后 squeue -l 看不到作业</td><td>大概率脚本里 <code>#SBATCH --partition</code> 写错：队列名是 sinfo.sh 输出的<b>第一列</b>（cu-1、cpuPartition 等），不是节点名（cu029）。可先 <code>bash -n 脚本</code> 检查语法。</td></tr>
+<tr><td>账单费用和实际对不上 / 想查具体作业费用</td><td>费用<b>每周一、周四更新</b>，非实时；界面显示的“截至时间”为计费系统更新点而非作业结束时间。命令行 <code>sbill</code>（仅一号集群）可查当月/指定月明细：<code>sbill --time 202602 --long</code>（个人）或 <code>sbill -g</code>（课题组，仅见自己作业明细）。</td></tr>
+<tr><td>为什么产生几十元的“意外”费用</td><td>多为 <b>salloc 交互作业未释放</b>：作业早已不用但一直挂着计费。用 <code>squeue -l</code> 找到后 <code>scancel JOBID</code>；以后长任务改用 sbatch。</td></tr>
+<tr><td>登录节点上 wget/curl 下载报 403</td><td>先执行 <code>source /lustre/software/proxy/set_proxy.sh</code> 再下载；仍失败联系管理员（可能需加白名单）。</td></tr>
+<tr><td>交互式 salloc 后 ssh 计算节点总是断/没反应</td><td>确认登录的是分配到的节点名；网络抖动时优先用 tmux 保活。salloc 会话如果断线，作业仍可能占着资源，重连后及时 squeue 检查并清理。</td></tr>
+<tr><td>想本地画图（R/ggplot 等）图形不显示</td><td>本地起 X server + SSH 开启 X11 转发，连计算节点用 <code>ssh -Y</code>；测试命令 <code>xclock</code>（FragPipe 图形界面也是同一机制，见分册 3 的 5.0/5.1）。</td></tr>
+<tr><td>我的 conda/R 环境加载很慢</td><td>主存储为并行文件系统，小文件多时慢属正常。建议把 conda 环境装到<b>全闪快速存储</b>（联系平台开通 /flashfs1/work 配额），大 IO 作业临时文件放 /flashfs1/scratch.global，跑完拷回家目录。</td></tr>
+<tr><td>作业跑很久都没结束，怎么看状态？</td><td><code>squeue -l</code> 看 TIME；<code>ssh 计算节点</code> 后 <code>top -u 账号</code> 看进程/CPU；结合 <code>tail -f 作业号.out</code> 判断是在正常计算还是卡死。作业超过时限会被系统终止，请按需估足 <code>--time</code>。</td></tr>
+<tr><td>能否在集群上用 Docker？</td><td>不能，平台仅支持 Singularity 容器；DIA-NN/FragPipe 均以 sif 镜像方式提供。</td></tr>
+<tr><td>重要数据怕丢怎么办</td><td>平台不对用户数据做备份。请自行备份：原始数据与关键结果在本地盘/移动硬盘各存一份，温冷大文件可迁移到归档存储 /nasfs1（按量计费 0.4 元/TB·天）。</td></tr>
+</table>
+</section>
+
+<!-- ===================== 5 ===================== -->
+<section id="s5">
+<h2>五、官方资源与技术支持</h2>
+<table>
+<tr><th>资源</th><th>地址 / 说明</th></tr>
+<tr><td>官方在线手册（总入口）</td><td><a href="http://hpc.szbl.ac.cn/manual/" target="_blank">http://hpc.szbl.ac.cn/manual/</a>（登录、作业、FAQ 等全内容，日常问题可覆盖约八成）</td></tr>
+<tr><td>账号申请</td><td><a href="http://hpc.szbl.ac.cn/htmls/apply.html" target="_blank">http://hpc.szbl.ac.cn/htmls/apply.html</a></td></tr>
+<tr><td>收费标准</td><td><a href="http://hpc.szbl.ac.cn/htmls/charging.html" target="_blank">http://hpc.szbl.ac.cn/htmls/charging.html</a>（最新更新以页面为准，本指南附 2026-06-24 版摘要）</td></tr>
+<tr><td>DIA-NN 平台章节（在线）</td><td>手册 Chapter 6 → 6.19 DIA-NN（平台官方命令页；其多步命令在稳定性上可参考《DIA-NN 数据分析》分册 4.1 的 sbatch 单脚本方案）</td></tr>
+<tr><td>快速登录教程（视频）</td><td><a href="http://hpc.szbl.ac.cn/training/quickstart_login/quickstart_login_player.html" target="_blank">hpc.szbl.ac.cn/training/quickstart_login</a>（Xshell 串名串密码直跳配置）</td></tr>
+<tr><td>本组参考文件</td><td>guide/szbl-hpc-manual.pdf（官方手册 PDF）；《集群DIA-NN和fragpipe以及本地frgapipe的使用.doc》（原始经验稿，本系列指南为其 HTML 优化版）</td></tr>
+<tr><td>技术支持</td><td>平台管理员（群内联系周卓老师等）；作业/软件疑难可携作业号反馈，必要时提供远程协助排查</td></tr>
+</table>
+
+<div class="box info"><span class="t">版本记录</span>
+v1.1（2026-09-16）：〇章新增 0.5 节——Slurm 与 Singularity “两套系统”的基本认知（一只管机器、一只管软件）：含 FragPipe 启动命令逐行拆解表、为何必须这套组合、指南/脚本中“Slurm + Singularity 的镜像容器”表述的含义（非另一种运行方式）、脚本与手动命令的关系及 --bind/--env“接线”参数说明；0.4 关键词表联动加指引。
+v1.0（2026-09-04）：系列分册化第 1 版。由《DIA-NN 与 FragPipe 在 SZBL HPC 上的使用指南》v1.2 拆分为三分册，本册＝第 1 册（HPC 使用入门：〇热身~三 Slurm ＋四 FAQ ＋五 官方资源）；内容与 v1.2 一致，仅重组结构、改写跨册引用。综合版历史保留如下。
+v1.2（2026-09-04）：按组内最新实战修订 DIA-NN 工作流（新增 4.1“工作流四铁律”）：①建库先行——漏切数/修饰/窗口在建库时定格，建库用 FASTA 勿混 decoy，contaminant 可并入、isoform 按需取舍；②搜库谱库（--lib）与 fasta 必须同一物种同一来源版本匹配，分析时 fasta 只做注释不加 --fasta-search；③更正旧经验——32 核节点可申请 64 核/64 线程并正常排队运行（超线程实测可行，是否更快以实测为准）；④换库或改参数对同一批数据重搜前删除旧 .quant 中间缓存，MBR（--reanalyse）在预测谱库定量中尽量开启（详见分册 2）。
+v1.1（2026-09-03）：按“无 Linux 基础新手”定位全面体检：新增第 0 章热身（登录/计算节点心智模型、命令与 Windows 对照、路径与关键词），并在第 1/2/3/4/5/6 章就地补充堡垒机、SFTP、X11、容器、常用命令等新手解释与操作引导。
+v1.0（2026-09-03）：整合官方手册、2026-06-24 收费标准、课题组《集群DIA-NN和fragpipe及本地fragpipe的使用》经验稿与平台运维沟通记录，形成 HTML 版指南。后续随平台规则更新在此维护新版本。
+</div>
+</section>
+
+</main>
+
+<footer>
+本系列指南由杨卡课题组生成，仅供课题组内部学习交流；所有资源路径、价格、命令均以 SZBL HPC 平台官方最新发布为准。
+同目录配套分册：<a href="2-DIA-NN数据分析-sbatch.html">《DIA-NN 数据分析（sbatch）》</a> · <a href="3-FragPipe数据分析-salloc.html">《FragPipe 数据分析（salloc）》</a>
+生成工具链：官方手册 PDF / 收费标准 DOCX 文本提取 → 要点整理 → 单文件 HTML（可离线打开、无外部依赖）。
+</footer>
+
+</body>
+</html>
