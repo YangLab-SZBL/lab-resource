@@ -62,6 +62,7 @@ nav:
       - DIA-NN: software/dia-nn.md
       - FragPipe: software/fragpipe.md
       - iFlow CLI: software/iflow-install.md
+      - Qoder: hpc/4-HPC SSH 连接和QoderCN 使用指南.md
   - Workflows:
       - Proteomics: workflows/proteomics.md
   - Scripts: scripts/index.md
