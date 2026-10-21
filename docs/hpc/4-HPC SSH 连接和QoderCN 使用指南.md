@@ -231,14 +231,6 @@ which qodercn
 - 环境激活和代理配置应在准备运行 QoderCN 的那个 Shell 中执行。 如果你退出了该 Shell，再重新进入计算环境，就应该重新检查这些设置。
 - `srun` 结束后，分配的资源通常会释放。 当你输入 `exit` 退出交互式 Shell 时，不应假设之前的计算资源还会继续保留。
 
-  [image](https://www.google.com/s2/favicons?domain=https://docs.hpc.msstate.edu\&sz=32)
-
-  ARC Documentation
-
-  +1
-
-
-
 ## 四、最方便的日常使用版
 
 如果实验室已经配置好所有依赖，你可以每次按下面的顺序操作：
