@@ -88,13 +88,6 @@ srun -p cu-1 -N 1 -n 1 --pty /bin/bash
 
 SSH 登录成功，不等于你已经获得计算节点或 GPU 资源。 SSH 通常只是让你进入 HPC 的登录环境；`srun` 则通过 Slurm 调度系统申请资源，并启动一个交互式终端。
 
-[image](https://www.google.com/s2/favicons?domain=https://docs.hpc.gwdg.de\&sz=32)
-
-Documentation for HPC
-
-+1
-
-
 
 | 参数          | 含义                |
 | ----------- | ----------------- |
@@ -121,14 +114,6 @@ srun: job 123456 has been allocated resources
 ```
 
 这是示例输出，不是你实际的作业编号。第一行表示等待资源，第二行表示资源已经分配。此时终端提示符可能会改变，表示你进入了分配到的计算环境。
-
-[image](https://www.google.com/s2/favicons?domain=https://docs.hpc.gwdg.de\&sz=32)
-
-Documentation for HPC
-
-+1
-
-
 
 ### 3. `micromamba activate bac_env`：为什么要激活环境？
 
