@@ -62,12 +62,6 @@ ssh uu1s5v865@10.68.247.110 -p 8022
 
 `-p` 是 SSH 的端口参数。这里的 IP 和端口是你提供的实验室连接信息，我无法仅凭命令确认该 IP 对应的具体服务器角色。
 
-[image](https://www.google.com/s2/favicons?domain=https://linux.die.net\&sz=32)
-
-Linux man page
-
-
-
 为什么要输入密码？
 
 SSH 需要验证你的身份。连接后，如果服务器要求密码，就输入实验室为该账号设置的密码。
