@@ -8,6 +8,7 @@ edit_uri: edit/main/docs/
 theme:
   name: material
   language: en
+  font: false   # use system Arial (set in extra.css) instead of Google Fonts
   palette:
     scheme: default
     primary: custom

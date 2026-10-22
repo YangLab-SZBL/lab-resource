@@ -4,12 +4,19 @@ hide:
   - toc
 ---
 
+<div class="lab-hero" markdown>
+
 # Lab Resource
 
 Computing and bioinformatics resources for the lab: how to use the SZBL HPC cluster,
 run proteomics software (DIA-NN, FragPipe), set up environments, and reuse lab scripts.
 
 课题组计算与生信资源汇总：深圳湾实验室 HPC 集群使用、蛋白质组学软件、环境配置与常用脚本。
+
+[Get started](hpc/getting-started.md){ .md-button .md-button--primary }
+[Proteomics workflow](workflows/proteomics.md){ .md-button }
+
+</div>
 
 <div class="grid cards" markdown>
 
