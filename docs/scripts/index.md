@@ -1,6 +1,6 @@
 # Scripts
 
-可复用脚本存放在仓库根目录的 [`scripts/`](https://github.com/yanglab202606/lab-resource/tree/main/scripts) 文件夹。
+可复用脚本存放在仓库根目录的 [`scripts/`](https://github.com/YangLab-SZBL/lab-resource/tree/main/scripts) 文件夹。
 下方源码直接读取自该文件夹，修改脚本后网页会自动同步。
 
 ## bac.sh

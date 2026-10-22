@@ -1,8 +1,8 @@
 site_name: Lab Resource
 site_description: Computing and bioinformatics resources for the lab
-site_url: https://yanglab202606.github.io/lab-resource/
-repo_url: https://github.com/yanglab202606/lab-resource
-repo_name: yanglab202606/lab-resource
+site_url: https://yanglab-szbl.github.io/lab-resource/
+repo_url: https://github.com/YangLab-SZBL/lab-resource
+repo_name: YangLab-SZBL/lab-resource
 edit_uri: edit/main/docs/
 
 theme:

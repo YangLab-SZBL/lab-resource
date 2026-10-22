@@ -1,10 +1,10 @@
 # Lab Resources
 
 <p>
-  <a href="https://yanglab202606.github.io/lab-resource/"><img alt="Open website" src="https://img.shields.io/badge/%F0%9F%93%96%20Open%20Website-yanglab202606.github.io%2Flab--resource-A8BDA8?style=for-the-badge&labelColor=5F7A62"></a>
+  <a href="https://yanglab-szbl.github.io/lab-resource/"><img alt="Open website" src="https://img.shields.io/badge/%F0%9F%93%96%20Open%20Website-yanglab--szbl.github.io%2Flab--resource-A8BDA8?style=for-the-badge&labelColor=5F7A62"></a>
 </p>
 
-**👉 Website: <https://yanglab202606.github.io/lab-resource/>**
+**👉 Website: <https://yanglab-szbl.github.io/lab-resource/>**
 
 <img src="docs/assets/site-qr.png" alt="QR code for the website" width="140">
 
