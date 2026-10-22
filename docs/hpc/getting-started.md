@@ -21,4 +21,6 @@
 2. [DIA-NN 数据分析（sbatch）](../software/dia-nn.md)
 3. [FragPipe 数据分析（salloc 图形界面）](../software/fragpipe.md)
 
+日常登录节点、SFTP 文件传输、结果查看与本地 Cursor 协作流程，参见 [登录、文件传输与数据分析](<5-HPC 登录、文件传输与数据分析.md>)。
+
 登录后需要配置 Python / Node.js 环境时，参见 [Micromamba Environment](micromamba.md)。
