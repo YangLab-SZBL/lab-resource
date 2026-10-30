@@ -67,5 +67,6 @@ nav:
       - Qoder: hpc/4-HPC SSH 连接和QoderCN 使用指南.md
   - Workflows:
       - Proteomics: workflows/proteomics.md
+      - MS Modifications: workflows/ms-modifications.md
   - Scripts: scripts/index.md
   - Troubleshooting: troubleshooting/common-errors.md
