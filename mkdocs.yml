@@ -60,6 +60,7 @@ nav:
       - Slurm: hpc/slurm.md
       - Micromamba Environment: hpc/micromamba.md
       - Login, Transfer & Analysis: hpc/5-HPC 登录、文件传输与数据分析.md
+      - SFTP File Transfer: hpc/file-transfer.md
   - Software:
       - DIA-NN: software/dia-nn.md
       - FragPipe: software/fragpipe.md
